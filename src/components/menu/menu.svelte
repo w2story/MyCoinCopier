@@ -1,6 +1,6 @@
 <script lang="ts">
     import Fa from 'svelte-fa'
-    import { faChalkboard, faBolt, faCommentAlt, faDollarSign, faPiggyBank, faAngleDown, faExternalLinkAlt, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+    import { faChalkboard, faBolt, faCommentAlt, faDollarSign, faPiggyBank, faUserCog, faAngleDown, faExternalLinkAlt, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 
     const menus = [
       {
@@ -38,6 +38,11 @@
       <li class="nav-li">
         <span class="nav-icon"><Fa icon={faBolt} fw size="lg" pull="left"/></span>
         <h3>간편설정</h3>
+      </li>
+      <li class="nav-li">
+        <span class="nav-icon"><Fa icon={faUserCog} fw size="lg" pull="left"/></span>
+        <h3>회원설정</h3>
+        <span class="down-up"><Fa icon={faAngleDown} size="1x" /></span>
       </li>
       <li class="nav-li">
         <span class="nav-icon"><Fa icon={faCommentAlt} fw size="lg" pull="left"/></span>
