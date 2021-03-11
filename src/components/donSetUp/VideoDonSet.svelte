@@ -4,7 +4,6 @@
 
   let videoChecked = false;
   let coinChecked = false;
-  let imgSupportChecked = false;
 </script>
 
 <div class="layout">

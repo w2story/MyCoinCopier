@@ -33,6 +33,10 @@
   * {
     font-family: "Spoqa Han Sans Neo", "sans-serif";
     color: #fff;
+    user-select: none;
+    &:focus {
+      outline: none;
+    }
   }
 
   main {
