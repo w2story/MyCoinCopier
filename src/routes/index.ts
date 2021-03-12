@@ -4,6 +4,7 @@ import QuickSetup from './QuickSetup.svelte'
 import VoiceDonSet from '../components/donSetUp/VoiceDonSet.svelte'
 import VideoDonSet from '../components/donSetUp/VideoDonSet.svelte'
 import OsuDonSet from '../components/donSetUp/OsuDonSet.svelte'
+import ChatQset from '../components/chatSet/ChatQset.svelte'
 
 export default {
   '/': Home,
@@ -11,5 +12,6 @@ export default {
   '/voiceDonSet': VoiceDonSet,
   '/videoDonSet': VideoDonSet,
   '/osuDonSet': OsuDonSet,
+  '/chatQset': ChatQset,
   '*': NotFound
 }

@@ -235,10 +235,10 @@
 </nav>
 
 <style lang="scss">
-  :global(nav a.active) {
+  :global(nav .don-nav .nav-li a.active) {
     font-weight: bold;
     text-decoration: underline;
-    background-color: #ff4081;
+    border-left-color: #ff4081 !important;
   }
 
   a:link,
@@ -323,10 +323,11 @@
         }
 
         a {
-          width: calc(100% - 20px);
+          width: calc(100% - 25px);
           height: 30px;
           padding: 10px;
           display: block;
+          border-left: 5px solid #2a2f38;
           border-bottom: 1px solid #232323;
 
           .nav-icon {

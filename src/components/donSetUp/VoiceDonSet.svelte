@@ -1,33 +1,12 @@
 <script lang="ts">
   import Fa from "svelte-fa";
-  import {
-    faImage,
-    faChevronUp,
-    faChevronDown,
-  } from "@fortawesome/free-solid-svg-icons";
+  import { faImage, faFemale, faMale } from "@fortawesome/free-solid-svg-icons";
 
   let voiceChecked = false;
   let coinChecked = false;
   let imgSupportChecked = false;
   let noticeLayoutSelected = "bottom";
-  let questions = [
-    { id: 1, text: `Where did you go to school?` },
-    { id: 2, text: `What is your mother's name?` },
-    {
-      id: 3,
-      text: `What is another personal fact that an attacker could easily find with Google?`,
-    },
-  ];
-
-  let selected;
-
-  let answer = "";
-
-  function handleSubmit() {
-    alert(
-      `answered question ${selected.id} (${selected.text}) with "${answer}"`
-    );
-  }
+  let ttsVoice = "Spring";
 </script>
 
 <div class="layout">
@@ -148,18 +127,33 @@
         <hr />
         <div class="thumbnail-group">
           <h3 class="thumbnail-title">TTS 음성</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={voiceChecked} />
-              <span class="slider round" />
+          <div class="thumbnail-btn">
+            <label class="thumbnail">
+              <input type="radio" value="Spring" bind:group={ttsVoice} />
+              <span class="radio-box">
+                <span class="icon">
+                  <Fa icon={faFemale} size="3x" />
+                </span>
+                <h3>Spring</h3>
+              </span>
             </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={voiceChecked} />
-              <span class="slider round" />
+            <label class="thumbnail">
+              <input type="radio" value="Ryan" bind:group={ttsVoice} />
+              <span class="radio-box">
+                <span class="icon">
+                  <Fa icon={faMale} size="3x" />
+                </span>
+                <h3>Ryan</h3>
+              </span>
             </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={voiceChecked} />
-              <span class="slider round" />
+            <label class="thumbnail">
+              <input type="radio" value="Naomi" bind:group={ttsVoice} />
+              <span class="radio-box">
+                <span class="icon">
+                  <Fa icon={faFemale} size="3x" />
+                </span>
+                <h3>Naomi</h3>
+              </span>
             </label>
           </div>
         </div>
@@ -184,8 +178,16 @@
         <h1>시스템 텍스트 / <small> System Text</small></h1>
       </div>
       <div class="card">
+        <div class="btn-group">
+          <h3>타이틀 TTS 사용하기</h3>
+          <label class="switch">
+            <input type="checkbox" bind:checked={voiceChecked} />
+            <span class="slider round" />
+          </label>
+        </div>
+        <hr />
         <div class="input-group">
-          <h3 class="input-title">내용 템플릿</h3>
+          <h3 class="input-title">타이틀 템플릿</h3>
           <input value="(name)님이 음성 도네이션을 공유했습니다." />
         </div>
         <hr />
@@ -257,7 +259,7 @@
 
               .thumbnail {
                 width: 158px;
-                height: 88px;
+                height: 90px;
                 display: inline-block;
                 float: left;
                 padding: 0%;
@@ -275,12 +277,11 @@
 
                 .radio-box {
                   width: 150px;
-                  height: 80px;
+                  height: 90px;
                   position: relative;
                   display: inline-block;
 
                   background-color: #1c2027;
-                  border: 4px solid #1c2027;
                   border-radius: 10px;
 
                   text-align: center;
@@ -290,6 +291,7 @@
                     height: 50px;
                     display: block;
                     padding: 0px 50px;
+                    padding-top: 10px;
                   }
                   h3 {
                     font-size: 16px;
@@ -315,7 +317,7 @@
                   }
                 }
                 input:checked + .radio-box {
-                  border-color: #ff4081;
+                  background-color: #ff4081;
                 }
                 input:focus + .radio-box {
                   box-shadow: 0 0 1px #ff4081;
