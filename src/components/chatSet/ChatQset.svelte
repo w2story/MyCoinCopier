@@ -1,31 +1,101 @@
 <script lang="ts">
   // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
+  import Select from "svelte-select";
   import Fa from "svelte-fa";
   import { faPalette } from "@fortawesome/free-solid-svg-icons";
 
   let chatQset = "def";
-  let backColorActive = false;
-  let fontColorActive = false;
+  let backColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+  let fontColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
 
-  function colorCallback(rgba) {
-    console.log(rgba.detail);
+  let fontSelected = { value: "Rix열정도체", label: "Rix열정도체" };
+
+  function handleSelect(event) {
+    console.log("selected item", event.detail);
+    // .. do something here 🙂
   }
+
+  const fontItems = [
+    {
+      value: "Rix열정도체",
+      label: "Rix열정도체",
+    },
+    {
+      value: "한불 정부표준 타자기체",
+      label: "한불 정부표준 타자기체",
+    },
+    {
+      value: "을유1945 SemiBold",
+      label: "을유1945 SemiBold",
+    },
+    {
+      value: "산돌 삼립호빵체 Outline",
+      label: "산돌 삼립호빵체 Outline",
+    },
+    {
+      value: "이랜드 나이스체",
+      label: "이랜드 나이스체",
+    },
+    {
+      value: "Y 너만을 비춤체",
+      label: "Y 너만을 비춤체",
+    },
+    {
+      value: "배민 을지로체",
+      label: "배민 을지로체",
+    },
+    {
+      value: "잘풀리는오늘체",
+      label: "잘풀리는오늘체",
+    },
+    {
+      value: "마루 부리",
+      label: "마루 부리",
+    },
+  ];
+
+  function backColorCallback(rgba) {
+    let ColorRGBA = "rgba(";
+    ColorRGBA += rgba.detail.r + ", ";
+    ColorRGBA += rgba.detail.g + ", ";
+    ColorRGBA += rgba.detail.b + ", ";
+    ColorRGBA += rgba.detail.a + ")";
+
+    backColor.rgba = ColorRGBA;
+  }
+  const fontColorCallback = (rgba) => {
+    let ColorRGBA = "rgba(";
+    ColorRGBA += rgba.detail.r + ", ";
+    ColorRGBA += rgba.detail.g + ", ";
+    ColorRGBA += rgba.detail.b + ", ";
+    ColorRGBA += rgba.detail.a + ")";
+
+    fontColor.rgba = ColorRGBA;
+  };
 
   const colorSelectAcitve = (colorSelect) => {
     switch (colorSelect) {
       case "back":
-        if (backColorActive === true) {
-          backColorActive = false;
+        if (backColor.active === true) {
+          backColor.active = false;
         } else {
-          backColorActive = true;
+          backColor.active = true;
+          fontColor.active = false;
         }
         break;
       case "font":
-        if (fontColorActive === true) {
-          fontColorActive = false;
+        if (fontColor.active === true) {
+          fontColor.active = false;
         } else {
-          fontColorActive = true;
+          fontColor.active = true;
+          backColor.active = false;
         }
         break;
     }
@@ -116,21 +186,33 @@
                   <h3>마캐2</h3>
                 </span>
               </label>
+              <label class="thumbnail">
+                <input type="radio" value="mycast" bind:group={chatQset} />
+                <span class="radio-box">
+                  <span class="img">
+                    <img src="https://i.imgur.com/qcN7fpp.gif" />
+                  </span>
+                  <h3>커스텀CSS</h3>
+                </span>
+              </label>
             </div>
           </div>
           <hr />
           <div class="color-group">
             <h3 class="color-title">배경 색상</h3>
             <label class="color-selecter">
-              <input value="100" />
-              <a on:click={() => colorSelectAcitve("back")}>
+              <input bind:value={backColor.rgba} />
+              <a
+                on:click={() => colorSelectAcitve("back")}
+                style="background-color:{backColor.rgba}"
+              >
                 <Fa icon={faPalette} size="lg" />
               </a>
-              {#if backColorActive}
+              {#if backColor.active}
                 <div class="color-pick">
                   <HsvPicker
-                    on:colorChange={colorCallback}
-                    startColor={"#FBFBFB"}
+                    on:colorChange={backColorCallback}
+                    startColor={"#202225"}
                   />
                 </div>
               {/if}
@@ -139,38 +221,26 @@
           <hr />
           <div class="select-group">
             <h3 class="select-title">글자 폰트</h3>
-            <div class="select" tabindex="1">
-              <input
-                class="selectopt"
-                name="test"
-                type="radio"
-                id="opt1"
-                checked
-              />
-              <label for="opt1" class="option">Oranges</label>
-              <input class="selectopt" name="test" type="radio" id="opt2" />
-              <label for="opt2" class="option">Apples</label>
-              <input class="selectopt" name="test" type="radio" id="opt3" />
-              <label for="opt3" class="option">Grapefruit</label>
-              <input class="selectopt" name="test" type="radio" id="opt4" />
-              <label for="opt4" class="option">Bananas</label>
-              <input class="selectopt" name="test" type="radio" id="opt5" />
-              <label for="opt5" class="option">Watermelon</label>
+            <div class="selecter">
+              <Select items={fontItems} selectedValue={fontSelected} />
             </div>
           </div>
           <hr />
           <div class="color-group">
-            <h3 class="color-title">배경 색상</h3>
+            <h3 class="color-title">폰트 색상</h3>
             <label class="color-selecter">
-              <input value="100" />
-              <a on:click={() => colorSelectAcitve("font")}>
+              <input bind:value={fontColor.rgba} />
+              <a
+                on:click={() => colorSelectAcitve("font")}
+                style="background-color:{fontColor.rgba}"
+              >
                 <Fa icon={faPalette} size="lg" />
               </a>
-              {#if fontColorActive}
+              {#if fontColor.active}
                 <div class="color-pick">
                   <HsvPicker
-                    on:colorChange={colorCallback}
-                    startColor={"#FBFBFB"}
+                    on:colorChange={fontColorCallback}
+                    startColor={"#202225"}
                   />
                 </div>
               {/if}
@@ -196,6 +266,23 @@
 </div>
 
 <style lang="scss">
+  :global(.selectContainer > div > .listContainer) {
+    &::-webkit-scrollbar {
+      width: 14px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #ff4081;
+      border-radius: 10px;
+      background-clip: padding-box;
+      border: 4px solid transparent;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #202225;
+      border-radius: 10px;
+      box-shadow: inset 0px 0px 0px white;
+    }
+  }
   .layout {
     min-width: 1100px;
     width: calc(100% - 30px);
@@ -483,9 +570,11 @@
                 a {
                   width: 30px;
                   height: 27px;
-                  padding: 12px 10px;
+                  padding: 10px;
                   display: block;
                   position: absolute;
+                  border-top-right-radius: 5px;
+                  border-bottom-right-radius: 5px;
                   right: -20px;
                   top: 0px;
                   border-left: 1px solid #3a3f47;
@@ -493,9 +582,11 @@
                 }
                 .color-pick {
                   position: absolute;
-                  bottom: -275px;
-                  right: -20px;
+                  bottom: -220px;
+                  right: -270px;
                   z-index: 100;
+                  border-radius: 5px;
+                  overflow: hidden;
 
                   color: #1c2027;
                 }
@@ -524,80 +615,21 @@
                 line-height: 20px;
                 padding: 10px;
               }
+              .selecter {
+                width: 42%;
 
-              .select {
-                display: flex;
-                flex-direction: column;
-                position: relative;
-                width: 40%;
-                height: 50px;
-                border-radius: 5px;
-              }
-              .option {
-                padding: 0 30px 0 10px;
-                min-height: 50px;
-                display: flex;
-                align-items: center;
-                background: #202225;
-                border-top: #3a3f47 solid 1px;
-                position: absolute;
-                top: 0;
-                width: 100%;
-                pointer-events: none;
-                order: 2;
-                z-index: 1;
-                transition: background 0.4s ease-in-out;
-                box-sizing: border-box;
-                overflow: hidden;
-                white-space: nowrap;
-              }
-
-              .option:hover {
-                background: #ff4081;
-              }
-
-              .select:focus .option {
-                position: relative;
-                pointer-events: all;
-              }
-
-              input {
-                opacity: 0;
-                position: absolute;
-                left: -99999px;
-                border-style: inset;
-                outline-color: orange;
-              }
-
-              input:checked + label {
-                order: 1;
-                z-index: 2;
-                background: #202225;
-                border-top: none;
-                position: relative;
-              }
-
-              input:checked + label:after {
-                content: "";
-                width: 0;
-                height: 0;
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 5px solid white;
-                position: absolute;
-                right: 10px;
-                top: calc(50% - 2.5px);
-                pointer-events: none;
-                z-index: 3;
-              }
-
-              input:checked + label:before {
-                position: absolute;
-                right: 0;
-                height: 50px;
-                width: 40px;
-                content: "";
-                background: #202225;
+                --background: #202225;
+                --border: 0px;
+                --listBackground: #202225;
+                --itemHoverBG: #a13157;
+                --borderRadius: 5px;
+                --placeholderColor: #fff;
+                --spinnerWidth: 40%;
+                --padding: 10px 16px;
+                --height: 47px;
+                --inputFontSize: 18px;
+                --itemIsActiveBG: #ff4081;
+                --clearSelectFocusColor: #fff;
               }
             }
           }

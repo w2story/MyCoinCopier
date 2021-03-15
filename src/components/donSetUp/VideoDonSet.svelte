@@ -158,7 +158,6 @@
         .card {
           .input-group {
             width: 100%;
-            float: left;
             padding-bottom: 10px;
             input {
             }

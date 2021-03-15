@@ -1,12 +1,98 @@
 <script lang="ts">
+  import { HsvPicker } from "svelte-color-picker";
+  import Select from "svelte-select";
   import Fa from "svelte-fa";
-  import { faImage, faFemale, faMale } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faImage,
+    faFemale,
+    faMale,
+    faPalette,
+  } from "@fortawesome/free-solid-svg-icons";
 
   let voiceChecked = false;
   let coinChecked = false;
   let imgSupportChecked = false;
   let noticeLayoutSelected = "bottom";
   let ttsVoice = "Spring";
+
+  let alarmSelected = { value: "무음", label: "무음" };
+  function handleSelect(event) {
+    console.log("selected item", event.detail);
+    // .. do something here 🙂
+  }
+  const alarmItems = [
+    {
+      value: "무음",
+      label: "무음",
+    },
+    {
+      value: "안녕로봇",
+      label: "안녕로봇",
+    },
+    {
+      value: "디바",
+      label: "디바",
+    },
+    {
+      value: "아이폰",
+      label: "아이폰",
+    },
+    {
+      value: "기상나팔",
+      label: "기상나팔",
+    },
+    {
+      value: "어서일어나",
+      label: "어서일어나",
+    },
+  ];
+
+  let sysTextColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+  let impactColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+  const sysTextColorCallback = (rgba) => {
+    let ColorRGBA = "rgba(";
+    ColorRGBA += rgba.detail.r + ", ";
+    ColorRGBA += rgba.detail.g + ", ";
+    ColorRGBA += rgba.detail.b + ", ";
+    ColorRGBA += rgba.detail.a + ")";
+
+    sysTextColor.rgba = ColorRGBA;
+  };
+  const impactColorCallback = (rgba) => {
+    let ColorRGBA = "rgba(";
+    ColorRGBA += rgba.detail.r + ", ";
+    ColorRGBA += rgba.detail.g + ", ";
+    ColorRGBA += rgba.detail.b + ", ";
+    ColorRGBA += rgba.detail.a + ")";
+
+    impactColor.rgba = ColorRGBA;
+  };
+  const colorSelectAcitve = (colorSelect) => {
+    switch (colorSelect) {
+      case "sys":
+        if (sysTextColor.active === true) {
+          sysTextColor.active = false;
+        } else {
+          sysTextColor.active = true;
+          impactColor.active = false;
+        }
+        break;
+      case "impact":
+        if (impactColor.active === true) {
+          impactColor.active = false;
+        } else {
+          impactColor.active = true;
+          sysTextColor.active = false;
+        }
+        break;
+    }
+  };
 </script>
 
 <div class="layout">
@@ -105,23 +191,12 @@
         <hr />
         <div class="select-group">
           <h3 class="select-title">알림 효과음</h3>
-          <div class="select" tabindex="1">
-            <input
-              class="selectopt"
-              name="test"
-              type="radio"
-              id="opt1"
-              checked
+          <div class="selecter">
+            <Select
+              items={alarmItems}
+              selectedValue={alarmSelected}
+              on:select={handleSelect}
             />
-            <label for="opt1" class="option">Oranges</label>
-            <input class="selectopt" name="test" type="radio" id="opt2" />
-            <label for="opt2" class="option">Apples</label>
-            <input class="selectopt" name="test" type="radio" id="opt3" />
-            <label for="opt3" class="option">Grapefruit</label>
-            <input class="selectopt" name="test" type="radio" id="opt4" />
-            <label for="opt4" class="option">Bananas</label>
-            <input class="selectopt" name="test" type="radio" id="opt5" />
-            <label for="opt5" class="option">Watermelon</label>
           </div>
         </div>
         <hr />
@@ -201,14 +276,46 @@
           <input value="100" />
         </div>
         <hr />
-        <div class="input-group">
-          <h3 class="input-title">시스템 텍스트 색상</h3>
-          <input value="100" />
+        <div class="color-group">
+          <h3 class="color-title">시스템 텍스트 색상</h3>
+          <label class="color-selecter">
+            <input bind:value={sysTextColor.rgba} />
+            <a
+              on:click={() => colorSelectAcitve("sys")}
+              style="background-color:{sysTextColor.rgba}"
+            >
+              <Fa icon={faPalette} size="lg" />
+            </a>
+            {#if sysTextColor.active}
+              <div class="color-pick">
+                <HsvPicker
+                  on:colorChange={sysTextColorCallback}
+                  startColor={"#202225"}
+                />
+              </div>
+            {/if}
+          </label>
         </div>
         <hr />
-        <div class="input-group">
-          <h3 class="input-title">닉네임, 금액 색상</h3>
-          <input value="100" />
+        <div class="color-group">
+          <h3 class="color-title">닉네임, 금액 색상</h3>
+          <label class="color-selecter">
+            <input bind:value={impactColor.rgba} />
+            <a
+              on:click={() => colorSelectAcitve("impact")}
+              style="background-color:{impactColor.rgba}"
+            >
+              <Fa icon={faPalette} size="lg" />
+            </a>
+            {#if impactColor.active}
+              <div class="color-pick">
+                <HsvPicker
+                  on:colorChange={impactColorCallback}
+                  startColor={"#202225"}
+                />
+              </div>
+            {/if}
+          </label>
         </div>
       </div>
     </div>
@@ -222,197 +329,18 @@
     .container {
       .components {
         .card {
-          .input-group {
-            width: 100%;
-            display: flex;
-            padding-bottom: 10px;
-            input {
-            }
-            .input-title {
-              width: 200px;
-              height: 30px;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
-            }
-          }
-          .thumbnail-group {
-            width: 100%;
-            display: flex;
-            padding-bottom: 10px;
-            .thumbnail-title {
-              width: 200px;
-              height: inherit;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
-            }
-            .thumbnail-btn {
-              width: 60%;
-              position: relative;
-              display: inline-block;
-              float: left;
-
-              .thumbnail {
-                width: 158px;
-                height: 90px;
-                display: inline-block;
-                float: left;
-                padding: 0%;
-                margin: 0%;
-                margin-right: 15px;
-
-                input {
-                  opacity: 0;
-                  width: 0%;
-                  height: 0%;
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                }
-
-                .radio-box {
-                  width: 150px;
-                  height: 90px;
-                  position: relative;
-                  display: inline-block;
-
-                  background-color: #1c2027;
-                  border-radius: 10px;
-
-                  text-align: center;
-
-                  .icon {
-                    width: 50px;
-                    height: 50px;
-                    display: block;
-                    padding: 0px 50px;
-                    padding-top: 10px;
-                  }
-                  h3 {
-                    font-size: 16px;
-                  }
-
-                  &.nLayout-center {
-                    .icon {
-                      opacity: 0.1;
-                      padding-top: 15px;
-                    }
-                    h3 {
-                      position: absolute;
-                      top: 26px;
-                      left: 60px;
-                    }
-                  }
-                  &.nLayout-noimg {
-                    h3 {
-                      position: absolute;
-                      top: 26px;
-                      left: 60px;
-                    }
-                  }
-                }
-                input:checked + .radio-box {
-                  background-color: #ff4081;
-                }
-                input:focus + .radio-box {
-                  box-shadow: 0 0 1px #ff4081;
-                }
-              }
-            }
-          }
           .select-group {
-            width: 100%;
-            float: left;
-            padding-bottom: 10px;
-
-            .select-title {
-              width: 200px;
-              height: inherit;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
-            }
-
-            .select {
-              display: flex;
-              flex-direction: column;
-              position: relative;
-              width: 40%;
-              height: 50px;
-              border-radius: 5px;
-            }
-            .option {
-              padding: 0 30px 0 10px;
-              min-height: 50px;
-              display: flex;
-              align-items: center;
-              background: #202225;
-              border-top: #3a3f47 solid 1px;
-              position: absolute;
-              top: 0;
+            .selecter {
               width: 100%;
-              pointer-events: none;
-              order: 2;
-              z-index: 1;
-              transition: background 0.4s ease-in-out;
-              box-sizing: border-box;
-              overflow: hidden;
-              white-space: nowrap;
             }
-
-            .option:hover {
-              background: #ff4081;
-            }
-
-            .select:focus .option {
-              position: relative;
-              pointer-events: all;
-            }
-
-            input {
-              opacity: 0;
-              position: absolute;
-              left: -99999px;
-              border-style: inset;
-              outline-color: orange;
-            }
-
-            input:checked + label {
-              order: 1;
-              z-index: 2;
-              background: #202225;
-              border-top: none;
-              position: relative;
-            }
-
-            input:checked + label:after {
-              content: "";
-              width: 0;
-              height: 0;
-              border-left: 5px solid transparent;
-              border-right: 5px solid transparent;
-              border-top: 5px solid white;
-              position: absolute;
-              right: 10px;
-              top: calc(50% - 2.5px);
-              pointer-events: none;
-              z-index: 3;
-            }
-
-            input:checked + label:before {
-              position: absolute;
-              right: 0;
-              height: 50px;
-              width: 40px;
-              content: "";
-              background: #202225;
+          }
+          .color-group {
+            .color-selecter {
+              width: 80%;
+              .color-pick {
+                right: 30px;
+                bottom: 0px;
+              }
             }
           }
         }
