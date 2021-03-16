@@ -5,6 +5,8 @@
   import Select from "svelte-select";
   // 폰트 스토어
   import { fontItems } from "~/store/fontList.ts";
+  // 이미지 업로드 전처리기
+  import Dropzone from "svelte-file-dropzone";
 
   // 폰트어섬
   import Fa from "svelte-fa";
@@ -15,6 +17,7 @@
     faPalette,
     faFileImage,
     faRandom,
+    faTimes,
   } from "@fortawesome/free-solid-svg-icons";
 
   let voiceChecked = false;
@@ -108,6 +111,30 @@
   // 폰트 처리기
   let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
   const groupBy = (item) => item.group;
+
+  // 이미지 업로드 처리기
+  let files = {
+    accepted: [],
+    rejected: [],
+    tmpImgArr: [],
+  };
+
+  function handleFilesSelect(e) {
+    const { acceptedFiles, fileRejections } = e.detail;
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onabort = () => console.log("file reading was aborted");
+      reader.onerror = () => console.log("file reading has failed");
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        files.tmpImgArr.push(reader.result);
+        console.log("file reading ok");
+      };
+    });
+    files.accepted = [...files.accepted, ...acceptedFiles];
+    files.rejected = [...files.rejected, ...fileRejections];
+    console.log(files);
+  }
 </script>
 
 <div class="layout">
@@ -202,8 +229,40 @@
         <hr />
         <div class="imgUpload-group">
           <h3 class="imgUpload-title">알림 이미지</h3>
-          <div class="imgUpload-box app">
-            <FilePond allowMultiple={false} max-files={1} server="/api" />
+          <div class="imgUpload-box">
+            <div class="imgUpload-btn">
+              <Dropzone on:drop={handleFilesSelect}>
+                <div class="upload-text">
+                  <span class="icon">
+                    <Fa icon={faFileImage} size="3x" />
+                  </span>
+                  <h3>드래그 or 클릭</h3>
+                </div>
+              </Dropzone>
+            </div>
+            <div class="imgUpload-list">
+              {#if files.tmpImgArr}
+                {#each files.tmpImgArr as item}
+                  <div class="imgItme">
+                    <img class="tmpimg" src={item} alt="d" />
+                    <div class="img-btn-group">
+                      <a class="close-btn">
+                        <Fa icon={faTimes} size="sm" />
+                      </a>
+                    </div>
+                  </div>
+                {/each}
+              {:else}
+                <div class="imgItme">
+                  <img class="tmpimg" src="a" alt="d" />
+                  <div class="img-btn-group">
+                    <a class="close-btn">
+                      <Fa icon={faTimes} size="sm" />
+                    </a>
+                  </div>
+                </div>
+              {/if}
+            </div>
           </div>
         </div>
         <hr />
@@ -345,4 +404,109 @@
 <style lang="scss">
   @import "../../scss/inputBox.scss";
   @import "./scss/input.se.scss";
+
+  :global(.imgUpload-btn > .dropzone) {
+    height: 100% !important;
+    background: #1c2027 !important;
+    color: #fff !important;
+    border: 0px !important;
+  }
+
+  // 이미지 업로드 박스
+  .imgUpload-group {
+    width: 100%;
+    display: flex;
+    padding-bottom: 10px;
+    .imgUpload-title {
+      width: 200px;
+      height: inherit;
+      color: #fff;
+      float: left;
+      font-size: 18px;
+      line-height: 20px;
+      padding: 10px;
+    }
+    .imgUpload-box {
+      width: 80%;
+      position: relative;
+      .imgUpload-btn {
+        width: 100%;
+        height: 100px;
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        float: none;
+
+        background-color: #1c2027;
+        border-radius: 10px;
+        margin-right: 15px;
+        margin-bottom: 15px;
+
+        text-align: center;
+        .icon {
+          width: 50px;
+          height: 50px;
+          display: inline-block;
+          padding: 10px 20px;
+        }
+        h3 {
+          display: inline-block;
+          font-size: 16px;
+        }
+      }
+      .imgUpload-list {
+        width: 100%;
+        height: auto;
+        display: inline-flex;
+        flex-wrap: wrap;
+
+        .imgItme {
+          width: 189px;
+          height: 189px;
+          position: relative;
+          display: inline-block;
+          overflow: hidden;
+
+          background-color: #1c2027;
+          border-radius: 10px;
+
+          margin-right: 15px;
+          margin-bottom: 15px;
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .img-btn-group {
+            width: 100%;
+            height: 80px;
+
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#000000+0,000000+100&0.8+0,0+75 */
+            background: -moz-linear-gradient(
+              top,
+              rgba(0, 0, 0, 0.8) 0%,
+              rgba(0, 0, 0, 0) 75%,
+              rgba(0, 0, 0, 0) 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              top,
+              rgba(0, 0, 0, 0.8) 0%,
+              rgba(0, 0, 0, 0) 75%,
+              rgba(0, 0, 0, 0) 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(
+              to bottom,
+              rgba(0, 0, 0, 0.8) 0%,
+              rgba(0, 0, 0, 0) 75%,
+              rgba(0, 0, 0, 0) 100%
+            ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+          }
+        }
+      }
+    }
+  }
 </style>

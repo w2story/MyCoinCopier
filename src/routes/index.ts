@@ -6,6 +6,7 @@ import VideoDonSet from '../components/donSetUp/VideoDonSet.svelte'
 import OsuDonSet from '../components/donSetUp/OsuDonSet.svelte'
 import ChatQset from '../components/chatSet/ChatQset.svelte'
 import UserInfo from '~/components/userInfo/userInfo.svelte'
+import Login from '~/components/login/Login.svelte'
 
 export default {
   '/': Home,
@@ -15,5 +16,6 @@ export default {
   '/osuDonSet': OsuDonSet,
   '/chatQset': ChatQset,
   '/userinfo': UserInfo,
+  '/login': Login,
   '*': NotFound
 }

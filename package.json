@@ -58,6 +58,7 @@
     "svelte": "^3.29.7",
     "svelte-color-picker": "^1.0.7",
     "svelte-fa": "^2.2.0",
+    "svelte-file-dropzone": "0.0.15",
     "svelte-preprocess": "^4.0.8",
     "svelte-select": "^3.17.0",
     "svelte-spa-router": "^3.1.0",
@@ -67,6 +68,7 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@fortawesome/free-brands-svg-icons": "^5.15.2",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2"
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "attr-accept": "^2.2.2"
   }
 }
