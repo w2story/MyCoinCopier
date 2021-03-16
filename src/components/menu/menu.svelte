@@ -106,13 +106,6 @@
         },
         {
           id: 4,
-          href: "/rouletteDonSet",
-          title: "룰렛후원",
-          icon: faDice,
-          path: "/rouletteDonSet",
-        },
-        {
-          id: 5,
           href: "/totoService",
           title: "토토서비스",
           icon: faTicketAlt,

@@ -1,20 +1,30 @@
 <script lang="ts">
+  // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
+  // input -> select 처리기
   import Select from "svelte-select";
+  // 폰트 스토어
+  import { fontItems } from "~/store/fontList.ts";
+
+  // 폰트어섬
   import Fa from "svelte-fa";
   import {
     faImage,
     faFemale,
     faMale,
     faPalette,
+    faFileImage,
+    faRandom,
   } from "@fortawesome/free-solid-svg-icons";
 
   let voiceChecked = false;
   let coinChecked = false;
   let imgSupportChecked = false;
+
   let noticeLayoutSelected = "bottom";
   let ttsVoice = "Spring";
 
+  // 알람 처리
   let alarmSelected = { value: "무음", label: "무음" };
   function handleSelect(event) {
     console.log("selected item", event.detail);
@@ -47,6 +57,7 @@
     },
   ];
 
+  // 색상 선택기
   let sysTextColor = {
     active: false,
     rgba: "rgba(32,34,37,1)",
@@ -93,6 +104,10 @@
         break;
     }
   };
+
+  // 폰트 처리기
+  let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
+  const groupBy = (item) => item.group;
 </script>
 
 <div class="layout">
@@ -130,7 +145,7 @@
     </div>
     <div class="components">
       <div class="title">
-        <h1>후원 음성 설정 / <small> Support Voice System</small></h1>
+        <h1>후원 설정 / <small> Support System</small></h1>
       </div>
       <div class="card">
         <div class="input-group">
@@ -185,8 +200,11 @@
           </div>
         </div>
         <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">알림 이미지</h3>
+        <div class="imgUpload-group">
+          <h3 class="imgUpload-title">알림 이미지</h3>
+          <div class="imgUpload-box app">
+            <FilePond allowMultiple={false} max-files={1} server="/api" />
+          </div>
         </div>
         <hr />
         <div class="select-group">
@@ -266,9 +284,11 @@
           <input value="(name)님이 음성 도네이션을 공유했습니다." />
         </div>
         <hr />
-        <div class="input-group">
-          <h3 class="input-title">시스템 텍스트 폰트</h3>
-          <input value="100" />
+        <div class="select-group">
+          <h3 class="select-title">글자 폰트</h3>
+          <div class="selecter">
+            <Select items={fontItems} selectedValue={fontSelected} {groupBy} />
+          </div>
         </div>
         <hr />
         <div class="input-group">
@@ -323,28 +343,6 @@
 </div>
 
 <style lang="scss">
-  @import "./scss/def.scss";
-
-  .layout {
-    .container {
-      .components {
-        .card {
-          .select-group {
-            .selecter {
-              width: 100%;
-            }
-          }
-          .color-group {
-            .color-selecter {
-              width: 80%;
-              .color-pick {
-                right: 30px;
-                bottom: 0px;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  @import "../../scss/inputBox.scss";
+  @import "./scss/input.se.scss";
 </style>

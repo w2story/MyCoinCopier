@@ -1,9 +1,57 @@
 <script lang="ts">
+  // input -> select 처리기
+  import Select from "svelte-select";
+  // 폰트 스토어
+  import { fontItems } from "~/store/fontList.ts";
+  // 폰트어섬
   import Fa from "svelte-fa";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faImage,
+    faFemale,
+    faMale,
+    faPalette,
+  } from "@fortawesome/free-solid-svg-icons";
 
   let videoChecked = false;
   let coinChecked = false;
+
+  let noticeLayoutSelected = "bottom";
+  // 알람 처리
+  let alarmSelected = { value: "무음", label: "무음" };
+  function handleSelect(event) {
+    console.log("selected item", event.detail);
+    // .. do something here 🙂
+  }
+  const alarmItems = [
+    {
+      value: "무음",
+      label: "무음",
+    },
+    {
+      value: "안녕로봇",
+      label: "안녕로봇",
+    },
+    {
+      value: "디바",
+      label: "디바",
+    },
+    {
+      value: "아이폰",
+      label: "아이폰",
+    },
+    {
+      value: "기상나팔",
+      label: "기상나팔",
+    },
+    {
+      value: "어서일어나",
+      label: "어서일어나",
+    },
+  ];
+
+  // 폰트 처리기
+  let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
+  const groupBy = (item) => item.group;
 </script>
 
 <div class="layout">
@@ -48,71 +96,56 @@
         <hr />
         <div class="thumbnail-group">
           <h3 class="thumbnail-title">알림 레이아웃</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
+          <div class="thumbnail-btn">
+            <label class="thumbnail">
+              <input
+                type="radio"
+                value="bottom"
+                bind:group={noticeLayoutSelected}
+              />
+              <span class="radio-box">
+                <span class="icon">
+                  <Fa icon={faImage} size="3x" />
+                </span>
+                <h3>text</h3>
+              </span>
             </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
+            <label class="thumbnail">
+              <input
+                type="radio"
+                value="center"
+                bind:group={noticeLayoutSelected}
+              />
+              <span class="radio-box nLayout-center">
+                <span class="icon">
+                  <Fa icon={faImage} size="3x" />
+                </span>
+                <h3>text</h3>
+              </span>
             </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">알림 효과음</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">TTS 음성</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
+            <label class="thumbnail">
+              <input
+                type="radio"
+                value="noimg"
+                bind:group={noticeLayoutSelected}
+              />
+              <span class="radio-box nLayout-noimg">
+                <h3>text</h3>
+              </span>
             </label>
           </div>
         </div>
         <hr />
-        <div class="supporting-text">
-          <p>※해당 스트림키는 남에게 보여주시면 안됩니다.</p>
-          <p>
-            ※사용방법 : "http://subwiti.net/mds/streamer_obs.php?str_tok="주소
-            뒤에 스트림키를 붙여 OBS 브라우저 URL에 추가
-          </p>
-          <p>※화면크기 : 720 * 1280 // 필히 준수해주시길 바랍니다.</p>
+        <div class="select-group">
+          <h3 class="select-title">알림 효과음</h3>
+          <div class="selecter">
+            <Select
+              items={alarmItems}
+              selectedValue={alarmSelected}
+              on:select={handleSelect}
+            />
+          </div>
         </div>
-        <!--<div class="input-group">
-              <input value="7887826671F1F91414BBFE29E7F7C17E"/>
-            </div>
-            <div class="btn-group">
-            </div>-->
       </div>
       <div class="components">
         <div class="title">
@@ -124,24 +157,15 @@
             <input value="(name)님이 음성 도네이션을 공유했습니다." />
           </div>
           <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 폰트</h3>
-            <input value="32" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 크기(px)</h3>
-            <input value="32" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 색상</h3>
-            <input value="100" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">닉네임, 금액 색상</h3>
-            <input value="100" />
+          <div class="select-group">
+            <h3 class="select-title">글자 폰트</h3>
+            <div class="selecter">
+              <Select
+                items={fontItems}
+                selectedValue={fontSelected}
+                {groupBy}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -150,39 +174,15 @@
 </div>
 
 <style lang="scss">
-  @import "./scss/def.scss";
+  @import "../../scss/inputBox.scss";
 
   .layout {
     .container {
       .components {
         .card {
-          .input-group {
-            width: 100%;
-            padding-bottom: 10px;
-            input {
-            }
-            .input-title {
-              width: 200px;
-              height: 30px;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
-            }
-          }
-          .thumbnail-group {
-            width: 100%;
-            float: left;
-            padding-bottom: 10px;
-            .thumbnail-title {
-              width: 200px;
-              height: 30px;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
+          .select-group {
+            .selecter {
+              width: 80%;
             }
           }
         }

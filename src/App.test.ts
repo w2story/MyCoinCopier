@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import App from './App.svelte';
 
 describe('<App>', () => {

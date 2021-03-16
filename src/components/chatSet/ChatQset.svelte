@@ -1,7 +1,11 @@
 <script lang="ts">
   // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
+  // input -> select 처리기
   import Select from "svelte-select";
+  // 폰트 스토어
+  import { fontItems } from "~/store/fontList.ts";
+  // 폰트어섬
   import Fa from "svelte-fa";
   import { faPalette } from "@fortawesome/free-solid-svg-icons";
 
@@ -15,51 +19,13 @@
     rgba: "rgba(32,34,37,1)",
   };
 
-  let fontSelected = { value: "Rix열정도체", label: "Rix열정도체" };
+  let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
+  const groupBy = (item) => item.group;
 
   function handleSelect(event) {
     console.log("selected item", event.detail);
     // .. do something here 🙂
   }
-
-  const fontItems = [
-    {
-      value: "Rix열정도체",
-      label: "Rix열정도체",
-    },
-    {
-      value: "한불 정부표준 타자기체",
-      label: "한불 정부표준 타자기체",
-    },
-    {
-      value: "을유1945 SemiBold",
-      label: "을유1945 SemiBold",
-    },
-    {
-      value: "산돌 삼립호빵체 Outline",
-      label: "산돌 삼립호빵체 Outline",
-    },
-    {
-      value: "이랜드 나이스체",
-      label: "이랜드 나이스체",
-    },
-    {
-      value: "Y 너만을 비춤체",
-      label: "Y 너만을 비춤체",
-    },
-    {
-      value: "배민 을지로체",
-      label: "배민 을지로체",
-    },
-    {
-      value: "잘풀리는오늘체",
-      label: "잘풀리는오늘체",
-    },
-    {
-      value: "마루 부리",
-      label: "마루 부리",
-    },
-  ];
 
   function backColorCallback(rgba) {
     let ColorRGBA = "rgba(";
@@ -222,7 +188,11 @@
           <div class="select-group">
             <h3 class="select-title">글자 폰트</h3>
             <div class="selecter">
-              <Select items={fontItems} selectedValue={fontSelected} />
+              <Select
+                items={fontItems}
+                selectedValue={fontSelected}
+                {groupBy}
+              />
             </div>
           </div>
           <hr />

@@ -1,10 +1,46 @@
 <script lang="ts">
+  // input -> select 처리기
+  import Select from "svelte-select";
+
   import Fa from "svelte-fa";
   import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 
   let videoChecked = false;
   let coinChecked = false;
-  let imgSupportChecked = false;
+
+  let noticeLayoutSelected = "bottom";
+  // 알람 처리
+  let alarmSelected = { value: "무음", label: "무음" };
+  function handleSelect(event) {
+    console.log("selected item", event.detail);
+    // .. do something here 🙂
+  }
+  const alarmItems = [
+    {
+      value: "무음",
+      label: "무음",
+    },
+    {
+      value: "안녕로봇",
+      label: "안녕로봇",
+    },
+    {
+      value: "디바",
+      label: "디바",
+    },
+    {
+      value: "아이폰",
+      label: "아이폰",
+    },
+    {
+      value: "기상나팔",
+      label: "기상나팔",
+    },
+    {
+      value: "어서일어나",
+      label: "어서일어나",
+    },
+  ];
 </script>
 
 <div class="layout">
@@ -12,7 +48,7 @@
     <h1 class="page-title">Osu 맵 후원 / <small> Osu Map Support</small></h1>
     <div class="components">
       <div class="title">
-        <h1>후원 설정 / <small> Support Setting</small></h1>
+        <h1>후원 세부 설정 / <small> Support Setting</small></h1>
       </div>
       <div class="card">
         <div class="btn-group">
@@ -47,80 +83,14 @@
           <input value="100" />
         </div>
         <hr />
-        <div class="input-group">
-          <h3 class="input-title">텍스트 글꼴</h3>
-          <input value="100" />
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">알림 레이아웃</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">알림 이미지</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">알림 효과음</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">TTS 음성</h3>
-          <div class="switch-btn">
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
-            <label class="switch">
-              <input type="checkbox" bind:checked={videoChecked} />
-              <span class="slider round" />
-            </label>
+        <div class="select-group">
+          <h3 class="select-title">알림 효과음</h3>
+          <div class="selecter">
+            <Select
+              items={alarmItems}
+              selectedValue={alarmSelected}
+              on:select={handleSelect}
+            />
           </div>
         </div>
         <hr />
@@ -138,37 +108,6 @@
             <div class="btn-group">
             </div>-->
       </div>
-      <div class="components">
-        <div class="title">
-          <h1>시스템 텍스트 / <small> System Text</small></h1>
-        </div>
-        <div class="card">
-          <div class="input-group">
-            <h3 class="input-title">내용 템플릿</h3>
-            <input value="(name)님이 음성 도네이션을 공유했습니다." />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 폰트</h3>
-            <input value="32" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 크기(px)</h3>
-            <input value="32" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">시스템 텍스트 색상</h3>
-            <input value="100" />
-          </div>
-          <hr />
-          <div class="input-group">
-            <h3 class="input-title">닉네임, 금액 색상</h3>
-            <input value="100" />
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -180,34 +119,9 @@
     .container {
       .components {
         .card {
-          .input-group {
-            width: 100%;
-            float: left;
-            padding-bottom: 10px;
-            input {
-            }
-            .input-title {
-              width: 200px;
-              height: 30px;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
-            }
-          }
-          .thumbnail-group {
-            width: 100%;
-            float: left;
-            padding-bottom: 10px;
-            .thumbnail-title {
-              width: 200px;
-              height: 30px;
-              color: #fff;
-              float: left;
-              font-size: 18px;
-              line-height: 20px;
-              padding: 10px;
+          .select-group {
+            .selecter {
+              width: 80%;
             }
           }
         }

@@ -1,0 +1,23 @@
+
+  .layout {
+    .container {
+      .components {
+        .card {
+          .select-group {
+            .selecter {
+              width: 80%;
+            }
+          }
+          .color-group {
+            .color-selecter {
+              width: 80%;
+              .color-pick {
+                right: 30px;
+                bottom: 0px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
