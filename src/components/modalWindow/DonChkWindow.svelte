@@ -1,48 +1,92 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
 
+  import DonList from "~/components/donWindow/donList.svelte";
+  import OsuList from "~/components/donWindow/osuList.svelte";
+  import TotoSet from "~/components/donWindow/totoSet.svelte";
+  import DonSetting from "~/components/donWindow/donSetting.svelte";
+
   import Fa from "svelte-fa";
   import {
     faMoneyBillWave,
     faMusic,
     faTools,
     faTicketAlt,
+    faBars,
   } from "@fortawesome/free-solid-svg-icons";
+
+  let containerActive = false;
+  let containerSections = [
+    {
+      id: 1,
+      title: "도네이션 리스트",
+      icon: faMoneyBillWave,
+      component: DonList,
+    },
+    {
+      id: 2,
+      title: "OSU 도네이션 리스트",
+      icon: faMusic,
+      component: OsuList,
+    },
+    {
+      id: 3,
+      title: "토토 서비스 환경설정",
+      icon: faTicketAlt,
+      component: TotoSet,
+    },
+    {
+      id: 4,
+      title: "도네이션 환경설정",
+      icon: faTools,
+      component: DonSetting,
+    },
+  ];
+
+  let containerSelected = {};
+
+  const toggleContainer = (section) => {
+    containerSections = containerSections.map((s) => {
+      containerActive = false;
+      if (s.id === section.id) {
+        if (containerActive === false) {
+          containerActive = true;
+          containerSelected = section;
+        }
+      }
+      return s;
+    });
+    containerActive = true;
+  };
+  const closeContainer = () => {
+    containerSelected = {};
+    containerActive = false;
+  };
 </script>
 
 <main>
   <header>
-    <h2 class="title">MyCoinCopier</h2>
+    <a on:click={() => closeContainer()}>
+      <Fa icon={faBars} size="2x" pull="left" />
+    </a>
+    <h2 class="title">MyCC Setting</h2>
   </header>
-  <div in:fade>
+  <div>
     <div class="layout">
-      <div class="container">
-        <div class="btn-group">
-          <div class="btn-item">
-            <span class="icon">
-              <Fa icon={faMoneyBillWave} size="2.5x" />
-            </span>
-            <h3>도네이션 리스트</h3>
+      <div class="container" in:fade>
+        {#if containerActive === false}
+          <div class="btn-group">
+            {#each containerSections as section}
+              <div class="btn-item" on:click={() => toggleContainer(section)}>
+                <span class="icon">
+                  <Fa icon={section.icon} size="2.5x" />
+                </span>
+                <h3>{section.title}</h3>
+              </div>
+            {/each}
           </div>
-          <div class="btn-item">
-            <span class="icon">
-              <Fa icon={faMusic} size="2.5x" />
-            </span>
-            <h3>OSU 도네이션<br />리스트</h3>
-          </div>
-          <div class="btn-item">
-            <span class="icon">
-              <Fa icon={faTicketAlt} size="2.5x" />
-            </span>
-            <h3>토토 서비스<br />환경설정</h3>
-          </div>
-          <div class="btn-item">
-            <span class="icon">
-              <Fa icon={faTools} size="2.5x" />
-            </span>
-            <h3>도네이션 환경설정</h3>
-          </div>
-        </div>
+        {/if}
+        <svelte:component this={containerSelected.component} />
       </div>
     </div>
   </div>
@@ -74,7 +118,7 @@
 
       .container {
         width: 100%;
-        height: auto;
+        height: 100%;
         padding-top: 60px;
         .btn-group {
           width: calc(100% - 40px);
@@ -118,6 +162,14 @@
       // 그림자영역
       box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
         0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+      a {
+        width: 40px;
+        height: 32px;
+        display: inline-block;
+        float: left;
+        padding: 4px 0px;
+        text-align: center;
+      }
       .title {
         width: 200px;
         height: 30px;
