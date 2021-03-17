@@ -1,5 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
+  // 라우터
   import { link, push } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
   import { location } from "svelte-spa-router";
@@ -117,7 +118,6 @@
       rotate: 0,
     },
   ];
-
   const expand = (section) => {
     sections = sections.map((s) => {
       s.active = false;
@@ -142,6 +142,16 @@
       }
       return s;
     });
+  };
+  // 모달 윈도우 처리
+  const openModalWindow = () => {
+    var modal = window.open(
+      "http://localhost:8080/#/donChk",
+      "MCC::후원체크창",
+      "width=400,height=800,resizable,scrollbars=yes,status=1",
+      false
+    );
+    modal.focus();
   };
 </script>
 
@@ -206,7 +216,7 @@
       </li>
     {/each}
     <li class="nav-li">
-      <a use:link use:active={"/donchk"} href="/donchk">
+      <a on:click={openModalWindow}>
         <span class="nav-icon">
           <Fa icon={faPiggyBank} fw size="lg" pull="left" />
         </span>

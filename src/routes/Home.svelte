@@ -1,28 +1,23 @@
 <script lang="ts">
-  import Fa from "svelte-fa";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  // 트랜스 구문
+  import { fade } from "svelte/transition";
+  // 메뉴, 상단바 상속 처리
 </script>
 
-<div class="layout">
-  <div class="container">
-    <h1>START SVEICE</h1>
+<article>
+  <div in:fade>
+    <div class="layout">
+      <div class="container">
+        <h1>START SVEICE</h1>
+      </div>
+    </div>
   </div>
-</div>
+</article>
 
 <style lang="scss">
-  .layout {
-    width: calc(100% - 30px);
+  div {
+    width: calc(100% - 251px);
+    height: 100%;
     float: left;
-    padding: 0px 15px;
-    margin-top: 60px;
-
-    overflow-x: hidden;
-    overflow-y: scroll;
-
-    .container {
-      min-width: 900px;
-      max-width: 1300px;
-      margin: auto;
-    }
   }
 </style>
