@@ -54,6 +54,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "chai": "^4.2.0",
     "postcss": "^8.1.10",
+    "rollup-plugin-svelte-svg": "^0.2.3",
     "snowpack": "^2.18.5",
     "svelte": "^3.29.7",
     "svelte-color-picker": "^1.0.7",
@@ -69,6 +70,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.2",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
-    "attr-accept": "^2.2.2"
+    "attr-accept": "^2.2.2",
+    "svelte-inline-svg": "^1.0.8"
   }
 }
