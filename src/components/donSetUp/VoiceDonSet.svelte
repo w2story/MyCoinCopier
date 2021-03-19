@@ -247,7 +247,7 @@
                     <img class="tmpimg" src={item} alt="d" />
                     <div class="img-btn-group">
                       <a class="close-btn">
-                        <Fa icon={faTimes} size="sm" />
+                        <Fa icon={faTimes} size="" />
                       </a>
                     </div>
                   </div>
@@ -257,7 +257,7 @@
                   <img class="tmpimg" src="a" alt="d" />
                   <div class="img-btn-group">
                     <a class="close-btn">
-                      <Fa icon={faTimes} size="sm" />
+                      <Fa icon={faTimes} size="" />
                     </a>
                   </div>
                 </div>
@@ -504,6 +504,20 @@
               rgba(0, 0, 0, 0) 100%
             ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
             filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+
+            .close-btn {
+              width: 16px;
+              height: 21px;
+              border: 3px solid #fff;
+              border-radius: 50%;
+              display: block;
+              padding: 2px 5px;
+              padding-bottom: 3px;
+              position: absolute;
+              top: 5px;
+              right: 5px;
+              text-align: center;
+            }
           }
         }
       }
