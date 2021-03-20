@@ -127,7 +127,7 @@
       .container {
         width: 100%;
         height: calc(100% - 60px);
-        padding-top: 60px;
+        margin-top: 60px;
         overflow-x: hidden;
         overflow-y: AUTO;
 

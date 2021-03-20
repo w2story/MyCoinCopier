@@ -47,7 +47,7 @@
       <div class="percentage">
         <h1>6%</h1>
       </div>
-      <div class="sub-btn">
+      <div class="sub-btn possible-btn">
         <Fa icon={faCheckCircle} size="3x" />
       </div>
     </div>
@@ -88,7 +88,7 @@
       <div class="percentage">
         <h1>94%</h1>
       </div>
-      <div class="sub-btn">
+      <div class="sub-btn impossible-btn">
         <Fa icon={faCheckCircle} size="3x" />
       </div>
     </div>
