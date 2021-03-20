@@ -4,6 +4,7 @@ import QuickSetup from '~/components/donSetUp/QuickSetup.svelte'
 import VoiceDonSet from '~/components/donSetUp/VoiceDonSet.svelte'
 import VideoDonSet from '~/components/donSetUp/VideoDonSet.svelte'
 import OsuDonSet from '~/components/donSetUp/OsuDonSet.svelte'
+import totoService from '~/components/donSetUp/totoDonSet.svelte'
 import ChatQset from '~/components/chatSet/ChatQset.svelte'
 import UserInfo from '~/components/userInfo/userInfo.svelte'
 import DonChkWindow from '~/components/modalWindow/DonChkWindow.svelte'
@@ -17,6 +18,7 @@ export default {
   '/osuDonSet': OsuDonSet,
   '/chatQset': ChatQset,
   '/userinfo': UserInfo,
+  '/totoService': totoService,
   '/login': Login,
   '/donChk': DonChkWindow,
   '*': NotFound

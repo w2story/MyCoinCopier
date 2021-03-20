@@ -4,6 +4,7 @@
   import DonList from "~/components/donWindow/donList.svelte";
   import OsuList from "~/components/donWindow/osuList.svelte";
   import TotoSet from "~/components/donWindow/totoSet.svelte";
+  import TotoChk from "~/components/donWindow/totoChk.svelte";
   import DonSetting from "~/components/donWindow/donSetting.svelte";
 
   import Fa from "svelte-fa";
@@ -13,6 +14,7 @@
     faTools,
     faTicketAlt,
     faBars,
+    faChartLine,
   } from "@fortawesome/free-solid-svg-icons";
 
   let containerActive = false;
@@ -37,6 +39,12 @@
     },
     {
       id: 4,
+      title: "토토 서비스 확인",
+      icon: faChartLine,
+      component: TotoChk,
+    },
+    {
+      id: 5,
       title: "도네이션 환경설정",
       icon: faTools,
       component: DonSetting,
@@ -121,7 +129,7 @@
         height: calc(100% - 60px);
         padding-top: 60px;
         overflow-x: hidden;
-        overflow-y: scroll;
+        overflow-y: AUTO;
 
         &::-webkit-scrollbar {
           width: 14px;
