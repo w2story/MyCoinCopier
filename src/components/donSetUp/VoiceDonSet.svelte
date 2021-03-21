@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
   // input -> select 처리기
@@ -7,31 +8,49 @@
   import { fontItems } from "~/store/fontList.ts";
   // 이미지 업로드 전처리기
   import Dropzone from "svelte-file-dropzone";
+  // 보이스세팅 값
+  import { getVoiceInfo, setVoiceInfo } from "~/store/database/voiceSetting";
 
   // 폰트어섬
   import Fa from "svelte-fa";
   import {
     faImage,
-    faFemale,
-    faMale,
     faPalette,
     faFileImage,
-    faRandom,
     faTimes,
   } from "@fortawesome/free-solid-svg-icons";
 
-  let voiceChecked = false;
-  let coinChecked = false;
-  let imgSupportChecked = false;
+  let voiceSet = {};
+  let noticeLayoutSelected = "";
+  let titleTTSUse;
 
-  let noticeLayoutSelected = "bottom";
-  let ttsVoice = "Spring";
+  // 색상 선택기
+  let sysTextColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+  let impactColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+
+  onMount(async () => {
+    const res = await getVoiceInfo(1);
+    console.log(res);
+
+    noticeLayoutSelected = String(res.allim_layout);
+    sysTextColor.rgba = res.sys_text_color;
+    impactColor.rgba = res.sys_emp_color;
+    titleTTSUse = res.title_tts_use;
+  });
+
+  getVoiceInfo(1).then((Response) => {
+    voiceSet = Response;
+  });
 
   // 알람 처리
-  let alarmSelected = { value: "무음", label: "무음" };
   function handleSelect(event) {
     console.log("selected item", event.detail);
-    // .. do something here 🙂
   }
   const alarmItems = [
     {
@@ -60,15 +79,6 @@
     },
   ];
 
-  // 색상 선택기
-  let sysTextColor = {
-    active: false,
-    rgba: "rgba(32,34,37,1)",
-  };
-  let impactColor = {
-    active: false,
-    rgba: "rgba(32,34,37,1)",
-  };
   const sysTextColorCallback = (rgba) => {
     let ColorRGBA = "rgba(";
     ColorRGBA += rgba.detail.r + ", ";
@@ -148,7 +158,7 @@
         <div class="btn-group">
           <h3>도네이션 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceChecked} />
+            <input type="checkbox" bind:checked={voiceSet.voice_use} />
             <span class="slider round" />
           </label>
         </div>
@@ -156,7 +166,7 @@
         <div class="btn-group">
           <h3>마캐코인 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={coinChecked} />
+            <input type="checkbox" bind:checked={voiceSet.mycast_coin_use} />
             <span class="slider round" />
           </label>
         </div>
@@ -164,7 +174,7 @@
         <div class="btn-group">
           <h3>이미지 후원 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={imgSupportChecked} />
+            <input type="checkbox" bind:checked={voiceSet.custom_img_use} />
             <span class="slider round" />
           </label>
         </div>
@@ -177,12 +187,12 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">글자 제한</h3>
-          <input value="100" />
+          <input bind:value={voiceSet.tts_text_size} />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input value="100" />
+          <input bind:value={voiceSet.allim_effect} />
         </div>
         <hr />
         <div class="thumbnail-group">
@@ -271,42 +281,9 @@
           <div class="selecter">
             <Select
               items={alarmItems}
-              selectedValue={alarmSelected}
+              selectedValue={voiceSet.allim_sound}
               on:select={handleSelect}
             />
-          </div>
-        </div>
-        <hr />
-        <div class="thumbnail-group">
-          <h3 class="thumbnail-title">TTS 음성</h3>
-          <div class="thumbnail-btn">
-            <label class="thumbnail">
-              <input type="radio" value="Spring" bind:group={ttsVoice} />
-              <span class="radio-box">
-                <span class="icon">
-                  <Fa icon={faFemale} size="3x" />
-                </span>
-                <h3>Spring</h3>
-              </span>
-            </label>
-            <label class="thumbnail">
-              <input type="radio" value="Ryan" bind:group={ttsVoice} />
-              <span class="radio-box">
-                <span class="icon">
-                  <Fa icon={faMale} size="3x" />
-                </span>
-                <h3>Ryan</h3>
-              </span>
-            </label>
-            <label class="thumbnail">
-              <input type="radio" value="Naomi" bind:group={ttsVoice} />
-              <span class="radio-box">
-                <span class="icon">
-                  <Fa icon={faFemale} size="3x" />
-                </span>
-                <h3>Naomi</h3>
-              </span>
-            </label>
           </div>
         </div>
         <hr />
@@ -318,11 +295,6 @@
           </p>
           <p>※화면크기 : 720 * 1280 // 필히 준수해주시길 바랍니다.</p>
         </div>
-        <!--<div class="input-group">
-              <input value="7887826671F1F91414BBFE29E7F7C17E"/>
-            </div>
-            <div class="btn-group">
-            </div>-->
       </div>
     </div>
     <div class="components">
@@ -333,14 +305,14 @@
         <div class="btn-group">
           <h3>타이틀 TTS 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceChecked} />
+            <input type="checkbox" bind:checked={titleTTSUse} />
             <span class="slider round" />
           </label>
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">타이틀 템플릿</h3>
-          <input value="(name)님이 음성 도네이션을 공유했습니다." />
+          <input bind:value={voiceSet.sys_title_template} />
         </div>
         <hr />
         <div class="select-group">
@@ -352,7 +324,7 @@
         <hr />
         <div class="input-group">
           <h3 class="input-title">시스템 텍스트 크기(px)</h3>
-          <input value="100" />
+          <input bind:value={voiceSet.sys_font_size} />
         </div>
         <hr />
         <div class="color-group">

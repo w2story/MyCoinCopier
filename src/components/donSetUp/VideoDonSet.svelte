@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   // input -> select 처리기
   import Select from "svelte-select";
   // 폰트 스토어
   import { fontItems } from "~/store/fontList.ts";
+  // 비디오세팅 값
+  import { getVideoInfo, setVideoInfo } from "~/store/database/videoSetting";
   // 폰트어섬
   import Fa from "svelte-fa";
   import {
@@ -12,12 +15,22 @@
     faPalette,
   } from "@fortawesome/free-solid-svg-icons";
 
-  let videoChecked = false;
-  let coinChecked = false;
+  let videoSet = {};
 
-  let noticeLayoutSelected = "bottom";
+  let noticeLayoutSelected = "";
+
+  onMount(async () => {
+    const res = await getVideoInfo(1);
+    console.log(res);
+
+    noticeLayoutSelected = String(res.allim_layout);
+  });
+
+  getVideoInfo(1).then((Response) => {
+    videoSet = Response;
+  });
+
   // 알람 처리
-  let alarmSelected = { value: "무음", label: "무음" };
   function handleSelect(event) {
     console.log("selected item", event.detail);
     // .. do something here 🙂
@@ -65,7 +78,7 @@
         <div class="btn-group">
           <h3>도네이션 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoChecked} />
+            <input type="checkbox" bind:checked={videoSet.video_use} />
             <span class="slider round" />
           </label>
         </div>
@@ -73,7 +86,7 @@
         <div class="btn-group">
           <h3>마캐코인 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={coinChecked} />
+            <input type="checkbox" bind:checked={videoSet.mycast_coin_use} />
             <span class="slider round" />
           </label>
         </div>
@@ -85,13 +98,8 @@
       </div>
       <div class="card">
         <div class="input-group">
-          <h3 class="input-title">글자 제한</h3>
-          <input value="100" />
-        </div>
-        <hr />
-        <div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input value="100" />
+          <input bind:value={videoSet.allim_effect} />
         </div>
         <hr />
         <div class="thumbnail-group">
@@ -141,7 +149,7 @@
           <div class="selecter">
             <Select
               items={alarmItems}
-              selectedValue={alarmSelected}
+              selectedValue={videoSet.allim_sound}
               on:select={handleSelect}
             />
           </div>
@@ -154,7 +162,7 @@
         <div class="card">
           <div class="input-group">
             <h3 class="input-title">내용 템플릿</h3>
-            <input value="(name)님이 음성 도네이션을 공유했습니다." />
+            <input bind:value={videoSet.sys_title_template} />
           </div>
           <hr />
           <div class="select-group">

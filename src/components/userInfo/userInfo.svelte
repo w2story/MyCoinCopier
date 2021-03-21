@@ -1,8 +1,20 @@
 <script lang="ts">
   import Fa from "svelte-fa";
   import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  import axios from "axios";
+  import { onMount } from "svelte";
+  import { getUserInfo, setUserInfo } from "~/store/database/userInfo";
 
   let ImgUrl = "https://i.imgur.com/XjsUghQ.gif";
+  let userInfo = {};
+
+  getUserInfo().then((Response) => {
+    userInfo = Response;
+  });
+
+  function userimg() {
+    setUserInfo(userInfo);
+  }
 </script>
 
 <div class="layout">
@@ -19,24 +31,28 @@
             <div class="img-list">
               {#if ImgUrl}
                 <div class="img-box original">
-                  <img src={ImgUrl} alt="userimg" />
+                  <img src={userInfo.user_img} alt="userimg" />
                   <p>원본</p>
                 </div>
                 <div class="img-box">
-                  <img src={ImgUrl} alt="userimg" />
+                  <img src={userInfo.user_img} alt="userimg" />
                   <p>200x200 (PC)</p>
                 </div>
                 <div class="img-box hfXhf">
-                  <img src={ImgUrl} alt="userimg" />
+                  <img src={userInfo.user_img} alt="userimg" />
                   <p>150x150</p>
                 </div>
                 <div class="img-box hXh">
-                  <img src={ImgUrl} alt="userimg" />
+                  <img src={userInfo.user_img} alt="userimg" />
                   <p>100x100 (M)</p>
                 </div>
               {/if}
             </div>
-            <input bind:value={ImgUrl} class="user-img-url" />
+            <input
+              bind:value={userInfo.user_img}
+              on:change={userimg}
+              class="user-img-url"
+            />
           </div>
         </div>
         <hr />
@@ -54,19 +70,19 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">닉네임</h3>
-          <input value="목수이야기" />
+          <input value={userInfo.user_name} />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">하단 텍스트</h3>
-          <input value="목수이야기" />
+          <input value={userInfo.user_content} />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">비밀번호</h3>
           <div class="pass-input">
-            <input value="asdf" type="password" class="pass" />
-            <input value="asdf" type="password" class="pass" />
+            <input value={userInfo.user_pass} type="password" class="pass" />
+            <input value={userInfo.user_pass} type="password" class="pass" />
           </div>
         </div>
         <hr />
