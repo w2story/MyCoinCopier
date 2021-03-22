@@ -14,7 +14,7 @@
   }
 </script>
 
-{#if $location.indexOf("donChk") == -1}
+{#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1}
   <main>
     <Header />
     <Menu />
@@ -24,6 +24,8 @@
       </div>
     {/key}
   </main>
+{:else if $location.indexOf("login") == 1}
+  <Router {routes} restoreScrollState={true} />
 {:else}
   <Router {routes} restoreScrollState={true} />
 {/if}

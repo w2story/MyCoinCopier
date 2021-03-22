@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
   // input -> select 처리기
@@ -8,16 +9,43 @@
   // 폰트어섬
   import Fa from "svelte-fa";
   import { faPalette } from "@fortawesome/free-solid-svg-icons";
+  // 채팅 db 불러오기
+  import {
+    getChatSetInfo,
+    setSysText,
+    setSysColor,
+  } from "~/store/database/chatSetting";
 
-  let chatQset = "def";
+  let chatSet = {};
+
+  // 색상 선택기
   let backColor = {
     active: false,
     rgba: "rgba(32,34,37,1)",
   };
-  let fontColor = {
+  let titleFontColor = {
     active: false,
     rgba: "rgba(32,34,37,1)",
   };
+  let textFontColor = {
+    active: false,
+    rgba: "rgba(32,34,37,1)",
+  };
+
+  onMount(async () => {
+    const res = await getChatSetInfo(1);
+    console.log(res);
+
+    backColor.rgba = res.style_bg;
+    titleFontColor.rgba = res.style_title_color;
+    textFontColor.rgba = res.style_text_color;
+  });
+
+  getChatSetInfo(1).then((Response) => {
+    chatSet = Response;
+  });
+
+  let chatQset = "def";
 
   let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
   const groupBy = (item) => item.group;
@@ -35,15 +63,30 @@
     ColorRGBA += rgba.detail.a + ")";
 
     backColor.rgba = ColorRGBA;
+    chatSet.style_bg = ColorRGBA;
+    systemColorUpdate();
   }
-  const fontColorCallback = (rgba) => {
+  const titleFontColorCallback = (rgba) => {
     let ColorRGBA = "rgba(";
     ColorRGBA += rgba.detail.r + ", ";
     ColorRGBA += rgba.detail.g + ", ";
     ColorRGBA += rgba.detail.b + ", ";
     ColorRGBA += rgba.detail.a + ")";
 
-    fontColor.rgba = ColorRGBA;
+    titleFontColor.rgba = ColorRGBA;
+    chatSet.style_title_color = ColorRGBA;
+    systemColorUpdate();
+  };
+  const textFontColorCallback = (rgba) => {
+    let ColorRGBA = "rgba(";
+    ColorRGBA += rgba.detail.r + ", ";
+    ColorRGBA += rgba.detail.g + ", ";
+    ColorRGBA += rgba.detail.b + ", ";
+    ColorRGBA += rgba.detail.a + ")";
+
+    textFontColor.rgba = ColorRGBA;
+    chatSet.style_text_color = ColorRGBA;
+    systemColorUpdate();
   };
 
   const colorSelectAcitve = (colorSelect) => {
@@ -53,18 +96,37 @@
           backColor.active = false;
         } else {
           backColor.active = true;
-          fontColor.active = false;
+          titleFontColor.active = false;
+          textFontColor.active = false;
         }
         break;
-      case "font":
-        if (fontColor.active === true) {
-          fontColor.active = false;
+      case "title":
+        if (titleFontColor.active === true) {
+          titleFontColor.active = false;
         } else {
-          fontColor.active = true;
+          titleFontColor.active = true;
+          textFontColor.active = false;
+          backColor.active = false;
+        }
+        break;
+      case "text":
+        if (textFontColor.active === true) {
+          textFontColor.active = false;
+        } else {
+          textFontColor.active = true;
+          titleFontColor.active = false;
           backColor.active = false;
         }
         break;
     }
+  };
+  // 후원 시스템 전처리
+  const ChatTextUpdate = () => {
+    setSysText(chatSet);
+  };
+  // 후원 시스템 색상 전처리
+  const systemColorUpdate = () => {
+    setSysColor(chatSet);
   };
 </script>
 
@@ -197,19 +259,19 @@
           </div>
           <hr />
           <div class="color-group">
-            <h3 class="color-title">폰트 색상</h3>
+            <h3 class="color-title">타이틀 폰트 색상</h3>
             <label class="color-selecter">
-              <input bind:value={fontColor.rgba} />
+              <input bind:value={titleFontColor.rgba} />
               <a
-                on:click={() => colorSelectAcitve("font")}
-                style="background-color:{fontColor.rgba}"
+                on:click={() => colorSelectAcitve("title")}
+                style="background-color:{titleFontColor.rgba}"
               >
                 <Fa icon={faPalette} size="lg" />
               </a>
-              {#if fontColor.active}
+              {#if titleFontColor.active}
                 <div class="color-pick">
                   <HsvPicker
-                    on:colorChange={fontColorCallback}
+                    on:colorChange={titleFontColorCallback}
                     startColor={"#202225"}
                   />
                 </div>
@@ -218,8 +280,40 @@
           </div>
           <hr />
           <div class="input-group">
-            <h3 class="input-title">폰트크기</h3>
-            <input value="100" />
+            <h3 class="input-title">타이틀 폰트 크기</h3>
+            <input
+              bind:value={chatSet.style_title_size}
+              on:change={ChatTextUpdate}
+            />
+          </div>
+          <hr />
+          <div class="color-group">
+            <h3 class="color-title">내용 폰트 색상</h3>
+            <label class="color-selecter">
+              <input bind:value={textFontColor.rgba} />
+              <a
+                on:click={() => colorSelectAcitve("text")}
+                style="background-color:{textFontColor.rgba}"
+              >
+                <Fa icon={faPalette} size="lg" />
+              </a>
+              {#if textFontColor.active}
+                <div class="color-pick">
+                  <HsvPicker
+                    on:colorChange={textFontColorCallback}
+                    startColor={"#202225"}
+                  />
+                </div>
+              {/if}
+            </label>
+          </div>
+          <hr />
+          <div class="input-group">
+            <h3 class="input-title">내용 폰트 크기</h3>
+            <input
+              bind:value={chatSet.style_text_size}
+              on:change={ChatTextUpdate}
+            />
           </div>
         </div>
       </div>

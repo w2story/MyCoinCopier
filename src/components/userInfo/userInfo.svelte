@@ -1,8 +1,4 @@
 <script lang="ts">
-  import Fa from "svelte-fa";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
-  import axios from "axios";
-  import { onMount } from "svelte";
   import { getUserInfo, setUserInfo } from "~/store/database/userInfo";
 
   let ImgUrl = "https://i.imgur.com/XjsUghQ.gif";
@@ -12,9 +8,9 @@
     userInfo = Response;
   });
 
-  function userimg() {
+  const userProfileUpdate = () => {
     setUserInfo(userInfo);
-  }
+  };
 </script>
 
 <div class="layout">
@@ -50,7 +46,7 @@
             </div>
             <input
               bind:value={userInfo.user_img}
-              on:change={userimg}
+              on:change={userProfileUpdate}
               class="user-img-url"
             />
           </div>
@@ -70,12 +66,18 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">닉네임</h3>
-          <input value={userInfo.user_name} />
+          <input
+            bind:value={userInfo.user_name}
+            on:change={userProfileUpdate}
+          />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">하단 텍스트</h3>
-          <input value={userInfo.user_content} />
+          <input
+            bind:value={userInfo.user_content}
+            on:change={userProfileUpdate}
+          />
         </div>
         <hr />
         <div class="input-group">

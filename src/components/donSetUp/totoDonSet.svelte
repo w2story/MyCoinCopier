@@ -1,46 +1,24 @@
 <script lang="ts">
-  // input -> select 처리기
-  import Select from "svelte-select";
+  // OSU맵 후원 세팅 값
+  import {
+    getTotoInfo,
+    setMapSettingToggle,
+    setSupportSystem,
+  } from "~/store/database/totoSetting";
 
-  import Fa from "svelte-fa";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  let totoSet = {};
 
-  let videoChecked = false;
-  let coinChecked = false;
-
-  let noticeLayoutSelected = "bottom";
-  // 알람 처리
-  let alarmSelected = { value: "무음", label: "무음" };
-  function handleSelect(event) {
-    console.log("selected item", event.detail);
-    // .. do something here 🙂
-  }
-  const alarmItems = [
-    {
-      value: "무음",
-      label: "무음",
-    },
-    {
-      value: "안녕로봇",
-      label: "안녕로봇",
-    },
-    {
-      value: "디바",
-      label: "디바",
-    },
-    {
-      value: "아이폰",
-      label: "아이폰",
-    },
-    {
-      value: "기상나팔",
-      label: "기상나팔",
-    },
-    {
-      value: "어서일어나",
-      label: "어서일어나",
-    },
-  ];
+  getTotoInfo(1).then((Response) => {
+    totoSet = Response;
+  });
+  // 토글 데이터 전처리
+  const totoToggleUpdate = () => {
+    setMapSettingToggle(totoSet);
+  };
+  // 후원 설정 전처리
+  const totoSupportSystemUpdate = () => {
+    setSupportSystem(totoSet);
+  };
 </script>
 
 <div class="layout">
@@ -54,9 +32,25 @@
       </div>
       <div class="card">
         <div class="btn-group">
-          <h3>도네이션 사용하기</h3>
+          <h3>토토서비스 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoChecked} />
+            <input
+              type="checkbox"
+              bind:checked={totoSet.toto_use}
+              on:change={totoToggleUpdate}
+            />
+            <span class="slider round" />
+          </label>
+        </div>
+        <hr />
+        <div class="btn-group">
+          <h3>마캐코인 사용하기</h3>
+          <label class="switch">
+            <input
+              type="checkbox"
+              bind:checked={totoSet.mycast_coin_use}
+              on:change={totoToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -69,7 +63,10 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">최대 코인 제한</h3>
-          <input value="100" />
+          <input
+            bind:value={totoSet.toto_max_coin}
+            on:change={totoSupportSystemUpdate}
+          />
         </div>
         <hr />
         <div class="supporting-text">

@@ -2,15 +2,20 @@
   // input -> select 처리기
   import Select from "svelte-select";
 
-  import Fa from "svelte-fa";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  // OSU맵 후원 세팅 값
+  import {
+    getMapSettingInfo,
+    setMapSettingToggle,
+    setSupportSystem,
+  } from "~/store/database/osuMapSetting";
 
-  let videoChecked = false;
-  let coinChecked = false;
+  let osuMapSet = {};
 
-  let noticeLayoutSelected = "bottom";
+  getMapSettingInfo(1).then((Response) => {
+    osuMapSet = Response;
+  });
+
   // 알람 처리
-  let alarmSelected = { value: "무음", label: "무음" };
   function handleSelect(event) {
     console.log("selected item", event.detail);
     // .. do something here 🙂
@@ -41,6 +46,20 @@
       label: "어서일어나",
     },
   ];
+
+  // 토글 데이터 전처리
+  const mapSettingToggleUpdate = () => {
+    setMapSettingToggle(osuMapSet);
+  };
+  // 후원 설정 전처리
+  const mapSupportSystemUpdate = () => {
+    setSupportSystem(osuMapSet);
+  };
+  // 알람 소리 처리
+  const allimSoundSelect = (event) => {
+    osuMapSet.allim_sound = event.detail.value;
+    mapSupportSystemUpdate();
+  };
 </script>
 
 <div class="layout">
@@ -54,7 +73,11 @@
         <div class="btn-group">
           <h3>도네이션 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoChecked} />
+            <input
+              type="checkbox"
+              bind:checked={osuMapSet.osumap_use}
+              on:change={mapSettingToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -62,7 +85,11 @@
         <div class="btn-group">
           <h3>마캐코인 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={coinChecked} />
+            <input
+              type="checkbox"
+              bind:checked={osuMapSet.mycast_coin_use}
+              on:change={mapSettingToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -75,12 +102,15 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">총 맵 제한</h3>
-          <input value="100" />
+          <input
+            bind:value={osuMapSet.osumap_total_list}
+            on:change={mapSupportSystemUpdate}
+          />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input value="100" />
+          <input bind:value={osuMapSet.allim_effect} />
         </div>
         <hr />
         <div class="select-group">
@@ -88,8 +118,8 @@
           <div class="selecter">
             <Select
               items={alarmItems}
-              selectedValue={alarmSelected}
-              on:select={handleSelect}
+              selectedValue={osuMapSet.allim_sound}
+              on:select={allimSoundSelect}
             />
           </div>
         </div>
@@ -102,11 +132,6 @@
           </p>
           <p>※화면크기 : 720 * 1280 // 필히 준수해주시길 바랍니다.</p>
         </div>
-        <!--<div class="input-group">
-              <input value="7887826671F1F91414BBFE29E7F7C17E"/>
-            </div>
-            <div class="btn-group">
-            </div>-->
       </div>
     </div>
   </div>

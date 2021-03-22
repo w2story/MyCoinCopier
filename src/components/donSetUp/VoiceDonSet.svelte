@@ -5,11 +5,17 @@
   // input -> select 처리기
   import Select from "svelte-select";
   // 폰트 스토어
-  import { fontItems } from "~/store/fontList.ts";
+  import { fontItems } from "~/store/fontList";
   // 이미지 업로드 전처리기
   import Dropzone from "svelte-file-dropzone";
   // 보이스세팅 값
-  import { getVoiceInfo, setVoiceInfo } from "~/store/database/voiceSetting";
+  import {
+    getVoiceInfo,
+    setVoiceToggle,
+    setSupportSystem,
+    setSysText,
+    setSysColor,
+  } from "~/store/database/voiceSetting";
 
   // 폰트어섬
   import Fa from "svelte-fa";
@@ -22,7 +28,6 @@
 
   let voiceSet = {};
   let noticeLayoutSelected = "";
-  let titleTTSUse;
 
   // 색상 선택기
   let sysTextColor = {
@@ -38,10 +43,11 @@
     const res = await getVoiceInfo(1);
     console.log(res);
 
-    noticeLayoutSelected = String(res.allim_layout);
+    console.log(res.allim_layout);
+
+    noticeLayoutSelected = res.allim_layout;
     sysTextColor.rgba = res.sys_text_color;
     impactColor.rgba = res.sys_emp_color;
-    titleTTSUse = res.title_tts_use;
   });
 
   getVoiceInfo(1).then((Response) => {
@@ -49,9 +55,6 @@
   });
 
   // 알람 처리
-  function handleSelect(event) {
-    console.log("selected item", event.detail);
-  }
   const alarmItems = [
     {
       value: "무음",
@@ -87,6 +90,8 @@
     ColorRGBA += rgba.detail.a + ")";
 
     sysTextColor.rgba = ColorRGBA;
+    voiceSet.sys_text_color = ColorRGBA;
+    systemColorUpdate();
   };
   const impactColorCallback = (rgba) => {
     let ColorRGBA = "rgba(";
@@ -96,6 +101,8 @@
     ColorRGBA += rgba.detail.a + ")";
 
     impactColor.rgba = ColorRGBA;
+    voiceSet.sys_emp_color = ColorRGBA;
+    systemColorUpdate();
   };
   const colorSelectAcitve = (colorSelect) => {
     switch (colorSelect) {
@@ -145,6 +152,35 @@
     files.rejected = [...files.rejected, ...fileRejections];
     console.log(files);
   }
+
+  // 토글 데이터 전처리
+  const voiceToggleUpdate = () => {
+    setVoiceToggle(voiceSet);
+  };
+  // 후원 설정 전처리
+  const voiceSupportSystemUpdate = () => {
+    setSupportSystem(voiceSet);
+  };
+  // 후원 시스템 전처리
+  const systemTextUpdate = () => {
+    setSysText(voiceSet);
+  };
+  // 후원 시스템 색상 전처리
+  const systemColorUpdate = () => {
+    setSysColor(voiceSet);
+  };
+  // 알람 레이아웃 처리
+  const noticeLayoutChange = (event) => {
+    console.log(event.currentTarget.value);
+    noticeLayoutSelected = event.currentTarget.value;
+    voiceSet.allim_layout = noticeLayoutSelected;
+    voiceSupportSystemUpdate();
+  };
+  // 알람 소리 처리
+  const allimSoundSelect = (event) => {
+    voiceSet.allim_sound = event.detail.value;
+    voiceSupportSystemUpdate();
+  };
 </script>
 
 <div class="layout">
@@ -158,7 +194,11 @@
         <div class="btn-group">
           <h3>도네이션 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceSet.voice_use} />
+            <input
+              type="checkbox"
+              bind:checked={voiceSet.voice_use}
+              on:change={voiceToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -166,7 +206,11 @@
         <div class="btn-group">
           <h3>마캐코인 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceSet.mycast_coin_use} />
+            <input
+              type="checkbox"
+              bind:checked={voiceSet.mycast_coin_use}
+              on:change={voiceToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -174,7 +218,11 @@
         <div class="btn-group">
           <h3>이미지 후원 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceSet.custom_img_use} />
+            <input
+              type="checkbox"
+              bind:checked={voiceSet.custom_img_use}
+              on:change={voiceToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -187,12 +235,18 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">글자 제한</h3>
-          <input bind:value={voiceSet.tts_text_size} />
+          <input
+            bind:value={voiceSet.tts_text_size}
+            on:change={voiceSupportSystemUpdate}
+          />
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input bind:value={voiceSet.allim_effect} />
+          <input
+            bind:value={voiceSet.allim_effect}
+            on:change={voiceSupportSystemUpdate}
+          />
         </div>
         <hr />
         <div class="thumbnail-group">
@@ -201,8 +255,10 @@
             <label class="thumbnail">
               <input
                 type="radio"
-                value="bottom"
+                name="layoutSelect"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
+                value="bottom"
               />
               <span class="radio-box">
                 <span class="icon">
@@ -214,8 +270,10 @@
             <label class="thumbnail">
               <input
                 type="radio"
-                value="center"
+                name="layoutSelect"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
+                value="center"
               />
               <span class="radio-box nLayout-center">
                 <span class="icon">
@@ -227,8 +285,10 @@
             <label class="thumbnail">
               <input
                 type="radio"
-                value="noimg"
+                name="layoutSelect"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
+                value="noimg"
               />
               <span class="radio-box nLayout-noimg">
                 <h3>text</h3>
@@ -282,7 +342,7 @@
             <Select
               items={alarmItems}
               selectedValue={voiceSet.allim_sound}
-              on:select={handleSelect}
+              on:select={allimSoundSelect}
             />
           </div>
         </div>
@@ -305,14 +365,21 @@
         <div class="btn-group">
           <h3>타이틀 TTS 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={titleTTSUse} />
+            <input
+              type="checkbox"
+              bind:checked={voiceSet.title_tts_use}
+              on:change={voiceToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
         <hr />
         <div class="input-group">
           <h3 class="input-title">타이틀 템플릿</h3>
-          <input bind:value={voiceSet.sys_title_template} />
+          <input
+            bind:value={voiceSet.sys_title_template}
+            on:change={systemTextUpdate}
+          />
         </div>
         <hr />
         <div class="select-group">
@@ -324,7 +391,10 @@
         <hr />
         <div class="input-group">
           <h3 class="input-title">시스템 텍스트 크기(px)</h3>
-          <input bind:value={voiceSet.sys_font_size} />
+          <input
+            bind:value={voiceSet.sys_font_size}
+            on:change={systemTextUpdate}
+          />
         </div>
         <hr />
         <div class="color-group">

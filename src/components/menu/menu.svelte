@@ -3,8 +3,7 @@
   // 라우터
   import { link, push } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
-  import { location } from "svelte-spa-router";
-
+  // 폰트어섬
   import Fa from "svelte-fa";
   import {
     faChalkboard,
@@ -26,6 +25,21 @@
     faExternalLinkAlt,
     faTimesCircle,
   } from "@fortawesome/free-solid-svg-icons";
+  // 회원 정보 받아오기
+  import { getUserInfo, userUpate } from "~/store/database/userInfo";
+  let userInfo = {};
+
+  getUserInfo().then((Response) => {
+    userInfo = Response;
+  });
+
+  $: if (userUpate > 0) {
+    console.log(userUpate);
+
+    getUserInfo().then((Response) => {
+      userInfo = Response;
+    });
+  }
 
   let visible = true;
   let sections = [
@@ -158,11 +172,11 @@
 <nav>
   <div class="userInfo">
     <div class="userImg">
-      <img src="https://i.imgur.com/XjsUghQ.gif" />
+      <img src={userInfo.user_img} />
     </div>
     <div class="userSet">
-      <h3>간텔라리스</h3>
-      <p>ap만년볼베 이렐 비아 오른 케넨 뽀삐 나르 럼블</p>
+      <h3>{userInfo.user_name}</h3>
+      <p>{userInfo.user_content}</p>
     </div>
   </div>
   <ul class="don-nav">

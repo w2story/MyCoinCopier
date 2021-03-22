@@ -1,5 +1,9 @@
 
 import axios from 'axios'
+import { update_keyed_each } from 'svelte/internal';
+import { writable } from 'svelte/store';
+
+export const userUpate = writable(0);
 
 export async function getUserInfo(key) {
   let userArr = {};
@@ -15,7 +19,6 @@ export async function getUserInfo(key) {
 }
 export async function setUserInfo(data) {
   let userUpateData = [
-    data.user_pass,
     data.user_name,
     data.user_img,
     data.user_content,
@@ -24,7 +27,28 @@ export async function setUserInfo(data) {
   let updateLog;
 
   const res = await axios
-    .post("http://127.0.0.1:3000/api/userInfo/" + data.user_key, userUpateData)
+    .post("http://127.0.0.1:3000/api/userInfo/profile/" + data.user_key, userUpateData)
+    .then((Response) => {
+      console.log(Response.data);
+      userUpate.set(1);
+    })
+    .catch((Error) => {
+      console.log(Error);
+      userUpate.set(0);
+    })
+  console.log(userUpate);
+
+}
+
+export async function setUserPass(data) {
+  let userUpateData = [
+    data.user_pass,
+    data.user_key
+  ]
+  let updateLog;
+
+  const res = await axios
+    .post("http://127.0.0.1:3000/api/userInfo/pass/" + data.user_key, userUpateData)
     .then((Response) => {
       console.log(Response.data);
       updateLog = Response.data;

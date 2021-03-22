@@ -3,9 +3,14 @@
   // input -> select 처리기
   import Select from "svelte-select";
   // 폰트 스토어
-  import { fontItems } from "~/store/fontList.ts";
+  import { fontItems } from "~/store/fontList";
   // 비디오세팅 값
-  import { getVideoInfo, setVideoInfo } from "~/store/database/videoSetting";
+  import {
+    getVideoInfo,
+    setVideoToggle,
+    setSupportSystem,
+    setSysText,
+  } from "~/store/database/videoSetting";
   // 폰트어섬
   import Fa from "svelte-fa";
   import {
@@ -31,10 +36,6 @@
   });
 
   // 알람 처리
-  function handleSelect(event) {
-    console.log("selected item", event.detail);
-    // .. do something here 🙂
-  }
   const alarmItems = [
     {
       value: "무음",
@@ -65,6 +66,31 @@
   // 폰트 처리기
   let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
   const groupBy = (item) => item.group;
+
+  // 토글 데이터 전처리
+  const videoToggleUpdate = () => {
+    setVideoToggle(videoSet);
+  };
+  // 후원 설정 전처리
+  const videoSupportSystemUpdate = () => {
+    setSupportSystem(videoSet);
+  };
+  // 후원 시스템 전처리
+  const systemTextUpdate = () => {
+    setSysText(videoSet);
+  };
+  // 알람 레이아웃 처리
+  const noticeLayoutChange = (event) => {
+    console.log(event.currentTarget.value);
+    noticeLayoutSelected = event.currentTarget.value;
+    videoSet.allim_layout = noticeLayoutSelected;
+    videoSupportSystemUpdate();
+  };
+  // 알람 소리 처리
+  const allimSoundSelect = (event) => {
+    videoSet.allim_sound = event.detail.value;
+    videoSupportSystemUpdate();
+  };
 </script>
 
 <div class="layout">
@@ -78,7 +104,11 @@
         <div class="btn-group">
           <h3>도네이션 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoSet.video_use} />
+            <input
+              type="checkbox"
+              bind:checked={videoSet.video_use}
+              on:change={videoToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -86,7 +116,11 @@
         <div class="btn-group">
           <h3>마캐코인 사용하기</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoSet.mycast_coin_use} />
+            <input
+              type="checkbox"
+              bind:checked={videoSet.mycast_coin_use}
+              on:change={videoToggleUpdate}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -99,7 +133,10 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input bind:value={videoSet.allim_effect} />
+          <input
+            bind:value={videoSet.allim_effect}
+            on:change{videoSupportSystemUpdate}
+          />
         </div>
         <hr />
         <div class="thumbnail-group">
@@ -110,6 +147,7 @@
                 type="radio"
                 value="bottom"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
               />
               <span class="radio-box">
                 <span class="icon">
@@ -123,6 +161,7 @@
                 type="radio"
                 value="center"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
               />
               <span class="radio-box nLayout-center">
                 <span class="icon">
@@ -136,6 +175,7 @@
                 type="radio"
                 value="noimg"
                 bind:group={noticeLayoutSelected}
+                on:change={noticeLayoutChange}
               />
               <span class="radio-box nLayout-noimg">
                 <h3>text</h3>
@@ -150,7 +190,7 @@
             <Select
               items={alarmItems}
               selectedValue={videoSet.allim_sound}
-              on:select={handleSelect}
+              on:select={allimSoundSelect}
             />
           </div>
         </div>
@@ -162,7 +202,10 @@
         <div class="card">
           <div class="input-group">
             <h3 class="input-title">내용 템플릿</h3>
-            <input bind:value={videoSet.sys_title_template} />
+            <input
+              bind:value={videoSet.sys_title_template}
+              on:change={systemTextUpdate}
+            />
           </div>
           <hr />
           <div class="select-group">
