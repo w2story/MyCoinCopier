@@ -58,3 +58,14 @@ export async function setUserPass(data) {
     })
   //return userArr;
 }
+
+export async function createUser(data) {
+  let userCreateData = data;
+  let updateLog;
+  const res = await axios.post("http://localhost:3000/api/auth/join", userCreateData).then((Response) => {
+    console.log(Response.data);
+    updateLog = Response.data;
+  }).catch((Error) => {
+    console.log(Error);
+  })
+}
