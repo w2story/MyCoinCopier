@@ -29,6 +29,8 @@
   import { getUserInfo, userUpate } from "~/store/database/userInfo";
   let userInfo = {};
 
+  console.log();
+
   getUserInfo().then((Response) => {
     userInfo = Response;
   });

@@ -1,17 +1,29 @@
 <script lang="ts">
+  import { userTokenChk, pageReplace } from "~/store/auth/index";
+
+  const userToken = sessionStorage.getItem("token");
+
+  if (!userToken && $location != "/login") {
+    console.log("not login");
+    pageReplace("#/login");
+  } else if (userToken && $location == "/login") {
+    console.log("login use");
+    pageReplace("");
+  } else if (!userToken && $location == "/login") {
+    console.log("login");
+  } else {
+    console.log("login token chk");
+    let tokenUse = userTokenChk();
+    if (!tokenUse) {
+      pageReplace("#/login");
+    }
+  }
+
   import { fade } from "svelte/transition";
   import Router, { location } from "svelte-spa-router";
-
   import routes from "~/routes";
   import Header from "~/components/header/header.svelte";
   import Menu from "~/components/menu/menu.svelte";
-
-  console.log($location);
-  if ($location.indexOf("donChk") != -1) {
-    console.log("aa");
-  } else {
-    console.log("bb");
-  }
 </script>
 
 {#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1}

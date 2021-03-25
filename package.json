@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "snowpack dev",
+    "dev": "snowpack dev --polyfill-node",
     "build": "snowpack build",
     "test": "wtr \"src/**/*.(test|spec).(t|j)s\"",
     "test:watch": "wtr \"src/**/*.(test|spec).(t|j)s\" --watch"
@@ -48,13 +48,18 @@
     "@tsconfig/svelte": "^1.0.10",
     "@types/chai": "^4.2.13",
     "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.35",
     "@types/snowpack-env": "^2.3.2",
     "@web/test-runner": "^0.9.7",
     "aaxios": "^0.18.1",
     "autoprefixer": "^10.0.4",
     "axios": "^0.21.1",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "chai": "^4.2.0",
+    "dotenv": "^8.2.0",
+    "is-image-url": "^1.1.8",
     "postcss": "^8.1.10",
     "rollup-plugin-svelte-svg": "^0.2.3",
     "snowpack": "^2.18.5",
@@ -66,7 +71,10 @@
     "svelte-select": "^3.17.0",
     "svelte-spa-router": "^3.1.0",
     "svelte-time-picker": "^1.0.6",
-    "typescript": "^4.0.0"
+    "svelte-toast": "^1.0.0",
+    "svelte-yup": "^1.0.5",
+    "typescript": "^4.0.0",
+    "uuid": "^8.3.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
@@ -74,6 +82,8 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "attr-accept": "^2.2.2",
-    "svelte-inline-svg": "^1.0.8"
+    "crypto": "^1.0.1",
+    "svelte-inline-svg": "^1.0.8",
+    "yup": "^0.32.9"
   }
 }

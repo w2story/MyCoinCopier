@@ -1,71 +1,102 @@
-
 import axios from 'axios'
-import { update_keyed_each } from 'svelte/internal';
 import { writable } from 'svelte/store';
 
 export const userUpate = writable(0);
 
-export async function getUserInfo(key) {
+// 유저 정보 값
+export async function getUserInfo() {
+  const userKey = sessionStorage.getItem("userKey");
   let userArr = {};
   const res = await axios
-    .get("http://127.0.0.1:3000/api/userInfo/1", {})
-    .then((Response) => {
-      userArr = Response.data[0];
+    .get("http://127.0.0.1:3000/api/userinfo/user/" + userKey, {})
+    .then((res) => {
+      userArr = res.data;
     })
     .catch((Error) => {
       console.log(Error);
     })
-  return userArr;
+  return userArr.userinfo;
 }
+
+// 유저 정보 값 업데이트
 export async function setUserInfo(data) {
-  let userUpateData = [
-    data.user_name,
-    data.user_img,
-    data.user_content,
-    data.user_key
-  ]
+  const userUpateData = data
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/userInfo/profile/" + data.user_key, userUpateData)
-    .then((Response) => {
-      console.log(Response.data);
+  await axios
+    .post("http://127.0.0.1:3000/api/userinfo/profile/", userUpateData)
+    .then((res) => {
+      console.log(res.data);
+      updateLog = res.data;
       userUpate.set(1);
     })
-    .catch((Error) => {
-      console.log(Error);
+    .catch((err) => {
+      console.log(err);
+      updateLog.success = false;
       userUpate.set(0);
     })
-  console.log(userUpate);
-
+  console.log(updateLog);
+  return updateLog;
 }
 
+// 유저 비빔번호 값 업데이트
 export async function setUserPass(data) {
-  let userUpateData = [
-    data.user_pass,
-    data.user_key
-  ]
+  const userUpateData = {
+    user_pass: data.user_pass,
+    user_key: data.user_key
+  }
+  console.log(userUpateData);
+
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/userInfo/pass/" + data.user_key, userUpateData)
-    .then((Response) => {
-      console.log(Response.data);
-      updateLog = Response.data;
+  await axios
+    .post("http://127.0.0.1:3000/api/userinfo/pass/", userUpateData)
+    .then((res) => {
+      console.log(res.data);
+      updateLog = res.data;
     })
-    .catch((Error) => {
-      console.log(Error);
+    .catch((err) => {
+      console.log(err);
+      updateLog.success = false;
     })
-  //return userArr;
+  return updateLog;
 }
 
+// 유저 정보 생성
 export async function createUser(data) {
   let userCreateData = data;
   let updateLog;
-  const res = await axios.post("http://localhost:3000/api/auth/join", userCreateData).then((Response) => {
+  await axios.post("http://localhost:3000/api/auth/join", userCreateData).then((Response) => {
     console.log(Response.data);
     updateLog = Response.data;
   }).catch((Error) => {
     console.log(Error);
   })
+  return updateLog;
+}
+
+// 유저 id 중복값 체크
+export async function userIdChk(data) {
+  let updateLog;
+  await axios
+    .get("http://127.0.0.1:3000/api/userinfo/chk/id/" + data)
+    .then((Response) => {
+      updateLog = Response.data;
+    }).catch((Error) => {
+      console.log(Error);
+    });
+  return updateLog;
+}
+
+// 유저 닉네임 중복값 체크
+export async function userNameChk(data) {
+  let updateLog;
+  await axios
+    .get("http://127.0.0.1:3000/api/userinfo/chk/name/" + data)
+    .then((Response) => {
+      updateLog = Response.data;
+    }).catch((Error) => {
+      console.log(Error);
+    });
+  return updateLog;
 }

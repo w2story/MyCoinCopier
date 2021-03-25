@@ -175,7 +175,8 @@
           height: auto;
           display: flex;
           padding-bottom: 10px;
-
+          
+          // 이전 input 처리기 - 삭제 필요
           input {
             width: 80%;
             height: 30px;
@@ -188,6 +189,35 @@
             padding: 10px;
             font-size: 18px;
           }
+          // 이전 input 처리기 - 삭제 필요
+
+          // 현재 처리기
+          .input-box {
+              width: 80%;
+              float: left;
+              height: 60px;
+              position: relative;
+              input {
+                width: 95%;
+                height: 30px;
+                color: #fff;
+                float: left;
+                background-color: #202225;
+
+                border-radius: 5px;
+                border: 0px;
+                padding: 10px;
+                font-size: 18px;
+              }
+              p {
+                color: #ff4081 !important;
+                font-size: 12px !important;
+                padding-bottom: 5px;
+                position: absolute;
+                bottom: -15px;
+                left: 10px;
+              }
+            }
           .input-title {
             width: 200px;
             height: 30px;

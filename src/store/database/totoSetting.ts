@@ -1,10 +1,11 @@
 
 import axios from 'axios'
 
-export async function getTotoInfo(key) {
+export async function getTotoInfo() {
   let Arr = {};
+  const userKey = sessionStorage.getItem("userKey");
   const res = await axios
-    .get("http://127.0.0.1:3000/api/totoset/1", {})
+    .get("http://127.0.0.1:3000/api/totoset/" + userKey, {})
     .then((Response) => {
       Arr = Response.data[0];
     })
