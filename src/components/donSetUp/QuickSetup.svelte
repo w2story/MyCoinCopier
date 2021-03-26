@@ -1,6 +1,19 @@
 <script lang="ts">
   import Fa from "svelte-fa";
+  import { onMount } from "svelte";
   import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+
+  import { getUserInfo } from "~/store/database/userInfo";
+
+  let userInfo = {};
+  let userStreamToken = "";
+
+  onMount(async () => {
+    userInfo = await getUserInfo();
+    userStreamToken = userInfo.user_stream_token;
+  });
+
+  console.log(userInfo);
 
   let voiceChecked = false;
   let videoChecked = false;
@@ -28,13 +41,13 @@
         </div>
         <hr />
         <div class="link-group">
-          <h3 class="link-text">4A838E705489860A5EFC99CCE27898AF</h3>
+          <h3 class="link-text">{userStreamToken}</h3>
           <span class="btn-group">
             <button class="icon-btn">
               <Fa icon={faPaperclip} fw size="2x" pull="left" />
             </button>
             <button class="text-btn">
-              <p>이동</p>
+              <p>재발급</p>
             </button>
           </span>
         </div>
@@ -98,7 +111,7 @@
       <div class="card">
         <div class="link-group">
           <h3 class="link-text">
-            http://subwiti.net/mcc/streamer/4A838E705489860A5EFC99CCE27898AF
+            http://subwiti.net/mcc/streamer/{userStreamToken}
           </h3>
           <span class="btn-group">
             <button class="icon-btn">
@@ -132,7 +145,9 @@
       </div>
       <div class="card">
         <div class="link-group">
-          <h3 class="link-text">http://subwiti.net/mcc/chat/w2story</h3>
+          <h3 class="link-text">
+            http://subwiti.net/mcc/chat/{userStreamToken}
+          </h3>
           <span class="btn-group">
             <button class="icon-btn">
               <Fa icon={faPaperclip} fw size="2x" pull="left" />

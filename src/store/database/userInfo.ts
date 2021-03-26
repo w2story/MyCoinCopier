@@ -21,7 +21,7 @@ export async function getUserInfo() {
 // 유저 정보 값 업데이트
 export async function setUserInfo(data) {
   const userUpateData = data
-  let updateLog;
+  let updateLog = {};
 
   await axios
     .post("http://127.0.0.1:3000/api/userinfo/profile/", userUpateData)

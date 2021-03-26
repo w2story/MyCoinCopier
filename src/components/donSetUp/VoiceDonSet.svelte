@@ -1,11 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  // 색상 선택기
-  import { HsvPicker } from "svelte-color-picker";
+  import Toast from "svelte-toast";
   // input -> select 처리기
   import Select from "svelte-select";
-  // 폰트 스토어
-  import { fontItems } from "~/store/fontList";
+  // 색상 선택기
+  import { HsvPicker } from "svelte-color-picker";
   // 이미지 업로드 전처리기
   import Dropzone from "svelte-file-dropzone";
   // 보이스세팅 값
@@ -26,6 +25,12 @@
     faTimes,
   } from "@fortawesome/free-solid-svg-icons";
 
+  // 스토어 : 알람 / 폰트
+  import { alarmItems } from "~/store/alarm";
+  import { fontItems } from "~/store/fontList";
+  import { loginSchema } from "~/store/schema/loginSchema";
+  import { number } from "yup/lib/locale";
+
   let voiceSet = {};
   let noticeLayoutSelected = "";
 
@@ -39,8 +44,9 @@
     rgba: "rgba(32,34,37,1)",
   };
 
+  // 사용자 정보값 처리
   onMount(async () => {
-    const res = await getVoiceInfo(1);
+    const res = await getVoiceInfo();
     console.log(res);
 
     console.log(res.allim_layout);
@@ -49,50 +55,23 @@
     sysTextColor.rgba = res.sys_text_color;
     impactColor.rgba = res.sys_emp_color;
   });
-
-  getVoiceInfo(1).then((Response) => {
+  getVoiceInfo().then((Response) => {
     voiceSet = Response;
   });
 
-  // 알람 처리
-  const alarmItems = [
-    {
-      value: "무음",
-      label: "무음",
-    },
-    {
-      value: "안녕로봇",
-      label: "안녕로봇",
-    },
-    {
-      value: "디바",
-      label: "디바",
-    },
-    {
-      value: "아이폰",
-      label: "아이폰",
-    },
-    {
-      value: "기상나팔",
-      label: "기상나팔",
-    },
-    {
-      value: "어서일어나",
-      label: "어서일어나",
-    },
-  ];
-
-  const sysTextColorCallback = (rgba) => {
-    let ColorRGBA = "rgba(";
-    ColorRGBA += rgba.detail.r + ", ";
-    ColorRGBA += rgba.detail.g + ", ";
-    ColorRGBA += rgba.detail.b + ", ";
-    ColorRGBA += rgba.detail.a + ")";
-
-    sysTextColor.rgba = ColorRGBA;
-    voiceSet.sys_text_color = ColorRGBA;
-    systemColorUpdate();
+  // 사용자 정보값 업데이트 처리
+  // 정보값 처리를 위한 구문
+  let error = {
+    tts_text_size: "",
+    allim_effect: "",
+    title_tts_use: "",
+    sys_font_size: "",
   };
+
+  // 토스트기 처리 구문
+  const toast = new Toast({ position: "bottom-right" });
+
+  /* 아직 미구현
   const impactColorCallback = (rgba) => {
     let ColorRGBA = "rgba(";
     ColorRGBA += rgba.detail.r + ", ";
@@ -102,8 +81,9 @@
 
     impactColor.rgba = ColorRGBA;
     voiceSet.sys_emp_color = ColorRGBA;
-    systemColorUpdate();
+    //systemColorUpdate();
   };
+  */
   const colorSelectAcitve = (colorSelect) => {
     switch (colorSelect) {
       case "sys":
@@ -154,32 +134,140 @@
   }
 
   // 토글 데이터 전처리
-  const voiceToggleUpdate = () => {
-    setVoiceToggle(voiceSet);
+  const voiceToggleUpdate = async () => {
+    const ToggleUpae = await setVoiceToggle(voiceSet);
+    if (ToggleUpae.success) {
+      toast.success("후원 설정 변경 완료.");
+    } else {
+      toast.error("후원 설정 변경 불가.");
+    }
   };
-  // 후원 설정 전처리
-  const voiceSupportSystemUpdate = () => {
-    setSupportSystem(voiceSet);
-  };
-  // 후원 시스템 전처리
-  const systemTextUpdate = () => {
-    setSysText(voiceSet);
-  };
-  // 후원 시스템 색상 전처리
-  const systemColorUpdate = () => {
-    setSysColor(voiceSet);
+  // 후원 글자 제한
+  const ttsTextSizeUpdate = async () => {
+    let textSize = voiceSet.tts_text_size.trim();
+    if (isNaN(textSize)) {
+      error.tts_text_size = "숫자가 아닙니다.";
+    } else {
+      textSize = Number(textSize.replace(/(^0+)/, ""));
+      if (textSize <= 0) {
+        error.tts_text_size = "글자 제한 수를 넣어주세요.";
+      } else if (textSize > 200) {
+        error.tts_text_size = "200이 최대 수 입니다.";
+      } else {
+        let voiceData = {
+          tts_text_size: textSize,
+          user_key: voiceSet.user_key,
+        };
+        const voiceUpate = await setSupportSystem(voiceData);
+        if (voiceUpate.success) {
+          error.tts_text_size = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.tts_text_size = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
   };
   // 알람 레이아웃 처리
-  const noticeLayoutChange = (event) => {
-    console.log(event.currentTarget.value);
+  const noticeLayoutChange = async (event) => {
     noticeLayoutSelected = event.currentTarget.value;
     voiceSet.allim_layout = noticeLayoutSelected;
-    voiceSupportSystemUpdate();
+    const voiceData = {
+      allim_layout: noticeLayoutSelected,
+      user_key: voiceSet.user_key,
+    };
+    const voiceUpate = await setSupportSystem(voiceData);
+    if (voiceUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
   };
   // 알람 소리 처리
-  const allimSoundSelect = (event) => {
+  const allimSoundSelect = async (event) => {
     voiceSet.allim_sound = event.detail.value;
-    voiceSupportSystemUpdate();
+    const voiceData = {
+      allim_sound: event.detail.value,
+      user_key: voiceSet.user_key,
+    };
+    const voiceUpate = await setSupportSystem(voiceData);
+    if (voiceUpate.success) {
+      error.tts_text_size = "";
+      toast.success("정보 변경 완료.");
+    } else {
+      error.tts_text_size = "";
+      toast.error("정보 변경 불가.");
+    }
+  };
+  // 후원 시스템 전처리
+  const TitleTemplateUpdate = async () => {
+    const sysTitleTemplate = voiceSet.sys_title_template.trim();
+    if (sysTitleTemplate.length == 0) {
+      error.title_tts_use = "템플릿 내용을 넣어주세요.";
+    } else if (sysTitleTemplate.length > 32) {
+      error.title_tts_use = "32자 까지 입력됩니다.";
+    } else {
+      const voiceData = {
+        sys_title_template: sysTitleTemplate,
+        user_key: voiceSet.user_key,
+      };
+      const voiceUpate = await setSysText(voiceData);
+      if (voiceUpate.success) {
+        toast.success("정보 변경 완료.");
+      } else {
+        toast.error("정보 변경 불가.");
+      }
+    }
+  };
+  // 후원 글자 제한
+  const sysFontSizeUpdate = async () => {
+    let sysFontSize = voiceSet.sys_font_size.trim();
+    if (isNaN(sysFontSize)) {
+      error.sys_font_size = "숫자가 아닙니다.";
+    } else {
+      sysFontSize = Number(sysFontSize.replace(/(^0+)/, ""));
+      if (sysFontSize <= 19) {
+        error.sys_font_size = "최소 20 이상을 넣어주세요.";
+      } else if (sysFontSize > 100) {
+        error.sys_font_size = "200이 최대 수 입니다.";
+      } else {
+        let voiceData = {
+          sys_font_size: sysFontSize,
+          user_key: voiceSet.user_key,
+        };
+        const voiceUpate = await setSysText(voiceData);
+        if (voiceUpate.success) {
+          error.sys_font_size = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.sys_font_size = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
+  };
+  const sysTextColorCallback = async (rgba) => {
+    const color = rgba.detail;
+    let setRGBA = "rgba(";
+    setRGBA += color.r + ", ";
+    setRGBA += color.g + ", ";
+    setRGBA += color.b + ", ";
+    setRGBA += color.a + ")";
+    sysTextColor.rgba = setRGBA;
+    voiceSet.sys_text_color = setRGBA;
+    let voiceData = {
+      sys_text_color: setRGBA,
+      user_key: voiceSet.user_key,
+    };
+    const voiceUpate = await setSysColor(voiceData);
+    if (voiceUpate.success) {
+      error.sys_font_size = "";
+      toast.success("정보 변경 완료.");
+    } else {
+      error.sys_font_size = "업데이트 미 처리";
+      toast.error("정보 변경 불가.");
+    }
   };
 </script>
 
@@ -235,20 +323,26 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">글자 제한</h3>
-          <input
-            bind:value={voiceSet.tts_text_size}
-            on:change={voiceSupportSystemUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={voiceSet.tts_text_size}
+              on:change={ttsTextSizeUpdate}
+            />
+            {#if error.tts_text_size}<p>{error.tts_text_size}</p>{/if}
+          </div>
         </div>
         <hr />
-        <div class="input-group">
+        <!--<div class="input-group">
           <h3 class="input-title">알림 효과</h3>
-          <input
-            bind:value={voiceSet.allim_effect}
-            on:change={voiceSupportSystemUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={voiceSet.allim_effect}
+              on:change={() => console.log(voiceSet.allim_effect)}
+            />
+            {#if error.allim_effect}<p>{error.allim_effect}</p>{/if}
+          </div>
         </div>
-        <hr />
+        <hr />-->
         <div class="thumbnail-group">
           <h3 class="thumbnail-title">알림 레이아웃</h3>
           <div class="thumbnail-btn">
@@ -376,10 +470,13 @@
         <hr />
         <div class="input-group">
           <h3 class="input-title">타이틀 템플릿</h3>
-          <input
-            bind:value={voiceSet.sys_title_template}
-            on:change={systemTextUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={voiceSet.sys_title_template}
+              on:change={TitleTemplateUpdate}
+            />
+            {#if error.title_tts_use}<p>{error.title_tts_use}</p>{/if}
+          </div>
         </div>
         <hr />
         <div class="select-group">
@@ -391,10 +488,13 @@
         <hr />
         <div class="input-group">
           <h3 class="input-title">시스템 텍스트 크기(px)</h3>
-          <input
-            bind:value={voiceSet.sys_font_size}
-            on:change={systemTextUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={voiceSet.sys_font_size}
+              on:change={sysFontSizeUpdate}
+            />
+            {#if error.sys_font_size}<p>{error.sys_font_size}</p>{/if}
+          </div>
         </div>
         <hr />
         <div class="color-group">
@@ -417,7 +517,7 @@
             {/if}
           </label>
         </div>
-        <hr />
+        <!--<hr />
         <div class="color-group">
           <h3 class="color-title">닉네임, 금액 색상</h3>
           <label class="color-selecter">
@@ -437,7 +537,7 @@
               </div>
             {/if}
           </label>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>

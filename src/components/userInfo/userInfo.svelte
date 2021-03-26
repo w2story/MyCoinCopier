@@ -19,10 +19,6 @@
     userInfo.user_pass_chk = "";
   });
 
-  const userProfileUpdate = () => {
-    setUserInfo(userInfo);
-  };
-
   // 정보값 처리를 위한 구문
   let error = {
     user_img: "",

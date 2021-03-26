@@ -22,6 +22,8 @@
       await loginSchema.validate(fields, { abortEarly: false });
 
       const userCreateChk = await userLoginChk(fields);
+      console.log(userCreateChk);
+
       if (userCreateChk == true) {
         // 로그인 확인 후 이동
         let link = document.location.href.split("#");
