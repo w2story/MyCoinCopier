@@ -28,8 +28,6 @@
   // 스토어 : 알람 / 폰트
   import { alarmItems } from "~/store/alarm";
   import { fontItems } from "~/store/fontList";
-  import { loginSchema } from "~/store/schema/loginSchema";
-  import { number } from "yup/lib/locale";
 
   let voiceSet = {};
   let noticeLayoutSelected = "";
@@ -64,7 +62,7 @@
   let error = {
     tts_text_size: "",
     allim_effect: "",
-    title_tts_use: "",
+    sys_title_template: "",
     sys_font_size: "",
   };
 
@@ -193,10 +191,8 @@
     };
     const voiceUpate = await setSupportSystem(voiceData);
     if (voiceUpate.success) {
-      error.tts_text_size = "";
       toast.success("정보 변경 완료.");
     } else {
-      error.tts_text_size = "";
       toast.error("정보 변경 불가.");
     }
   };
@@ -204,9 +200,9 @@
   const TitleTemplateUpdate = async () => {
     const sysTitleTemplate = voiceSet.sys_title_template.trim();
     if (sysTitleTemplate.length == 0) {
-      error.title_tts_use = "템플릿 내용을 넣어주세요.";
+      error.sys_title_template = "템플릿 내용을 넣어주세요.";
     } else if (sysTitleTemplate.length > 32) {
-      error.title_tts_use = "32자 까지 입력됩니다.";
+      error.sys_title_template = "32자 까지 입력됩니다.";
     } else {
       const voiceData = {
         sys_title_template: sysTitleTemplate,
@@ -215,6 +211,7 @@
       const voiceUpate = await setSysText(voiceData);
       if (voiceUpate.success) {
         toast.success("정보 변경 완료.");
+        error.sys_title_template = "";
       } else {
         toast.error("정보 변경 불가.");
       }
@@ -247,6 +244,7 @@
       }
     }
   };
+  // 후원 글자 색상 선택기 처리
   const sysTextColorCallback = async (rgba) => {
     const color = rgba.detail;
     let setRGBA = "rgba(";
@@ -262,10 +260,8 @@
     };
     const voiceUpate = await setSysColor(voiceData);
     if (voiceUpate.success) {
-      error.sys_font_size = "";
       toast.success("정보 변경 완료.");
     } else {
-      error.sys_font_size = "업데이트 미 처리";
       toast.error("정보 변경 불가.");
     }
   };
@@ -475,7 +471,7 @@
               bind:value={voiceSet.sys_title_template}
               on:change={TitleTemplateUpdate}
             />
-            {#if error.title_tts_use}<p>{error.title_tts_use}</p>{/if}
+            {#if error.sys_title_template}<p>{error.sys_title_template}</p>{/if}
           </div>
         </div>
         <hr />

@@ -1,52 +1,54 @@
 
 import axios from 'axios'
 
+const hostName = window.location.hostname;
+const url = "http://" + hostName + ":3000/api";
+
 export async function getMapSettingInfo(key) {
-  let Arr = {};
-  const res = await axios
-    .get("http://127.0.0.1:3000/api/osusetting/1", {})
-    .then((Response) => {
-      Arr = Response.data[0];
+  const userKey = sessionStorage.getItem("userKey");
+  let osuMapArr = {};
+  await axios
+    .get(url + "/osusetting/" + userKey, {})
+    .then((res) => {
+      osuMapArr = res.data;
     })
-    .catch((Error) => {
-      console.log(Error);
+    .catch((err) => {
+      console.log(err);
     })
-  return Arr;
+  return osuMapArr.osuMapSet;
 }
 export async function setMapSettingToggle(data) {
-  let ToggleUpateData = [
-    data.osumap_use,
-    data.mycast_coin_use,
-    data.user_key
-  ]
+  let ToggleUpateData = {
+    osumap_use: data.osumap_use,
+    mycast_coin_use: data.mycast_coin_use,
+    user_key: data.user_key
+  }
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/osusetting/toggle/", ToggleUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/osusetting/toggle/", ToggleUpateData)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+
+  return updateLog;
 }
 export async function setSupportSystem(data) {
-  let SupportUpateData = [
-    data.osumap_total_list,
-    data.allim_effect,
-    data.allim_sound,
-    data.user_key
-  ]
-  console.log(SupportUpateData);
-
   let updateLog;
-
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/osusetting/support", SupportUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/osusetting/support", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  console.log(updateLog);
+
+  return updateLog;
 }

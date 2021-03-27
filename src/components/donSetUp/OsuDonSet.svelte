@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Toast from "svelte-toast";
   // input -> select 처리기
   import Select from "svelte-select";
 
@@ -9,56 +10,72 @@
     setSupportSystem,
   } from "~/store/database/osuMapSetting";
 
+  // 스토어 : 알람 / 폰트
+  import { alarmItems } from "~/store/alarm";
+
   let osuMapSet = {};
 
-  getMapSettingInfo(1).then((Response) => {
+  getMapSettingInfo().then((Response) => {
     osuMapSet = Response;
   });
 
-  // 알람 처리
-  function handleSelect(event) {
-    console.log("selected item", event.detail);
-    // .. do something here 🙂
-  }
-  const alarmItems = [
-    {
-      value: "무음",
-      label: "무음",
-    },
-    {
-      value: "안녕로봇",
-      label: "안녕로봇",
-    },
-    {
-      value: "디바",
-      label: "디바",
-    },
-    {
-      value: "아이폰",
-      label: "아이폰",
-    },
-    {
-      value: "기상나팔",
-      label: "기상나팔",
-    },
-    {
-      value: "어서일어나",
-      label: "어서일어나",
-    },
-  ];
+  let error = {
+    osumap_total_list: "",
+  };
+
+  // 토스트기 처리 구문
+  const toast = new Toast({ position: "bottom-right" });
 
   // 토글 데이터 전처리
-  const mapSettingToggleUpdate = () => {
-    setMapSettingToggle(osuMapSet);
+  const mapSettingToggleUpdate = async () => {
+    const ToggleUpae = await setMapSettingToggle(osuMapSet);
+    if (ToggleUpae.success) {
+      toast.success("후원 설정 변경 완료.");
+    } else {
+      toast.error("후원 설정 변경 불가.");
+    }
   };
   // 후원 설정 전처리
-  const mapSupportSystemUpdate = () => {
-    setSupportSystem(osuMapSet);
+  // 후원 글자 제한
+  const MapSizeUpdate = async () => {
+    let mpaTotalSize = osuMapSet.osumap_total_list.trim();
+    if (isNaN(mpaTotalSize)) {
+      error.osumap_total_list = "숫자가 아닙니다.";
+    } else {
+      mpaTotalSize = Number(mpaTotalSize.replace(/(^0+)/, ""));
+      if (mpaTotalSize <= 0) {
+        error.osumap_total_list = "최대 맵 수를 넣어주세요.";
+      } else if (mpaTotalSize > 100) {
+        error.osumap_total_list = "100이 최대 수 입니다.";
+      } else {
+        let osuMapData = {
+          osumap_total_list: mpaTotalSize,
+          user_key: osuMapSet.user_key,
+        };
+        const mapSetUpate = await setSupportSystem(osuMapData);
+        if (mapSetUpate.success) {
+          error.osumap_total_list = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.osumap_total_list = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
   };
   // 알람 소리 처리
-  const allimSoundSelect = (event) => {
+  const allimSoundSelect = async (event) => {
     osuMapSet.allim_sound = event.detail.value;
-    mapSupportSystemUpdate();
+    const osuMapData = {
+      allim_sound: event.detail.value,
+      user_key: osuMapSet.user_key,
+    };
+    const mapSetUpate = await setSupportSystem(osuMapData);
+    if (mapSetUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
   };
 </script>
 
@@ -102,17 +119,20 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">총 맵 제한</h3>
-          <input
-            bind:value={osuMapSet.osumap_total_list}
-            on:change={mapSupportSystemUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={osuMapSet.osumap_total_list}
+              on:change={MapSizeUpdate}
+            />
+            {#if error.osumap_total_list}<p>{error.osumap_total_list}</p>{/if}
+          </div>
         </div>
         <hr />
-        <div class="input-group">
+        <!--<div class="input-group">
           <h3 class="input-title">알림 효과</h3>
           <input bind:value={osuMapSet.allim_effect} />
         </div>
-        <hr />
+        <hr />-->
         <div class="select-group">
           <h3 class="select-title">알림 효과음</h3>
           <div class="selecter">
@@ -138,7 +158,8 @@
 </div>
 
 <style lang="scss">
-  @import "./scss/def.scss";
+  @import "../../scss/inputBox.scss";
+  @import "./scss/input.se.scss";
 
   .layout {
     .container {

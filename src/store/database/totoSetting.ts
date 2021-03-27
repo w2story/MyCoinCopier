@@ -1,51 +1,53 @@
 
 import axios from 'axios'
 
+const hostName = window.location.hostname;
+const url = "http://" + hostName + ":3000/api";
+
 export async function getTotoInfo() {
-  let Arr = {};
   const userKey = sessionStorage.getItem("userKey");
-  const res = await axios
-    .get("http://127.0.0.1:3000/api/totoset/" + userKey, {})
-    .then((Response) => {
-      Arr = Response.data[0];
+  let Arr = {};
+
+  await axios
+    .get(url + "/totoset/" + userKey, {})
+    .then((res) => {
+      Arr = res.data;
     })
     .catch((Error) => {
       console.log(Error);
     })
-  return Arr;
+  return Arr.totoSet;
 }
-export async function setMapSettingToggle(data) {
-  let ToggleUpateData = [
-    data.toto_use,
-    data.mycast_coin_use,
-    data.user_key
-  ]
+export async function setTotoToggle(data) {
+  let ToggleUpateData = {
+    toto_use: data.toto_use,
+    mycast_coin_use: data.mycast_coin_use,
+    user_key: data.user_key
+  }
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/totoset/toggle/", ToggleUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/totoset/toggle/", ToggleUpateData)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  return updateLog;
 }
 export async function setSupportSystem(data) {
-  let SupportUpateData = [
-    data.toto_max_coin,
-    data.user_key
-  ]
-  console.log(SupportUpateData);
-
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/totoset/support", SupportUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/totoset/support", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  return updateLog;
 }

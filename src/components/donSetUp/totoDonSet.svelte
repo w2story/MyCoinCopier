@@ -1,23 +1,60 @@
 <script lang="ts">
-  // OSU맵 후원 세팅 값
+  import Toast from "svelte-toast";
+  // 토토 세팅 값
   import {
     getTotoInfo,
-    setMapSettingToggle,
+    setTotoToggle,
     setSupportSystem,
   } from "~/store/database/totoSetting";
 
   let totoSet = {};
 
-  getTotoInfo(1).then((Response) => {
-    totoSet = Response;
+  getTotoInfo().then((res) => {
+    totoSet = res;
   });
-  // 토글 데이터 전처리
-  const totoToggleUpdate = () => {
-    setMapSettingToggle(totoSet);
+
+  let error = {
+    toto_max_coin: "",
   };
-  // 후원 설정 전처리
-  const totoSupportSystemUpdate = () => {
-    setSupportSystem(totoSet);
+
+  // 토스트기 처리 구문
+  const toast = new Toast({ position: "bottom-right" });
+
+  // 토글 데이터 전처리
+  const totoToggleUpdate = async () => {
+    const ToggleUpae = await setTotoToggle(totoSet);
+    if (ToggleUpae.success) {
+      toast.success("후원 설정 변경 완료.");
+    } else {
+      toast.error("후원 설정 변경 불가.");
+    }
+  };
+  // 토토 배팅 제한
+  const totoSupportSystemUpdate = async () => {
+    let totoMaxCoin = totoSet.toto_max_coin.trim();
+    if (isNaN(totoMaxCoin)) {
+      error.toto_max_coin = "숫자가 아닙니다.";
+    } else {
+      totoMaxCoin = Number(totoMaxCoin.replace(/(^0+)/, ""));
+      if (totoMaxCoin <= 99) {
+        error.toto_max_coin = "최소 100 이상을 넣어주세요.";
+      } else if (totoMaxCoin > 500000) {
+        error.toto_max_coin = "오십만이 최대 수 입니다.";
+      } else {
+        let Data = {
+          toto_max_coin: totoMaxCoin,
+          user_key: totoSet.user_key,
+        };
+        const voiceUpate = await setSupportSystem(Data);
+        if (voiceUpate.success) {
+          error.toto_max_coin = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.toto_max_coin = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
   };
 </script>
 
@@ -63,10 +100,13 @@
       <div class="card">
         <div class="input-group">
           <h3 class="input-title">최대 코인 제한</h3>
-          <input
-            bind:value={totoSet.toto_max_coin}
-            on:change={totoSupportSystemUpdate}
-          />
+          <div class="input-box">
+            <input
+              bind:value={totoSet.toto_max_coin}
+              on:change={totoSupportSystemUpdate}
+            />
+            {#if error.toto_max_coin}<p>{error.toto_max_coin}</p>{/if}
+          </div>
         </div>
         <hr />
         <div class="supporting-text">
@@ -78,7 +118,8 @@
 </div>
 
 <style lang="scss">
-  @import "./scss/def.scss";
+  @import "../../scss/inputBox.scss";
+  @import "./scss/input.se.scss";
 
   .layout {
     .container {

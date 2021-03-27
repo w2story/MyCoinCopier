@@ -1,68 +1,71 @@
-
 import axios from 'axios'
 
-export async function getVideoInfo(key) {
+const hostName = window.location.hostname;
+const url = "http://" + hostName + ":3000/api";
+
+export async function getVideoInfo() {
+  const userKey = sessionStorage.getItem("userKey");
   let videoArr = {};
-  const res = await axios
-    .get("http://127.0.0.1:3000/api/videoSet/1", {})
-    .then((Response) => {
-      videoArr = Response.data[0];
+  await axios
+    .get(url + "/videoset/" + userKey, {})
+    .then((res) => {
+      videoArr = res.data;
     })
-    .catch((Error) => {
-      console.log(Error);
+    .catch((err) => {
+      console.log(err);
     })
-  return videoArr;
+  return videoArr.videoSet;
 }
+
 export async function setVideoToggle(data) {
-  let ToggleUpateData = [
-    data.video_use,
-    data.mycast_coin_use,
-    data.user_key
-  ]
+  let ToggleUpateData = {
+    video_use: data.video_use,
+    mycast_coin_use: data.mycast_coin_use,
+    user_key: data.user_key
+  };
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/videoSet/toggle/", ToggleUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/videoset/toggle/", ToggleUpateData)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  console.log(updateLog);
+
+  return updateLog;
 }
 export async function setSupportSystem(data) {
-  let SupportUpateData = [
-    data.allim_effect,
-    data.allim_layout,
-    data.allim_sound,
-    data.user_key
-  ]
-  console.log(SupportUpateData);
-
   let updateLog;
-
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/videoSet/support", SupportUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/videoset/support", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  console.log(updateLog);
+
+  return updateLog;
 }
 export async function setSysText(data) {
-  let SysTextUpateData = [
-    data.sys_title_template,
-    data.user_key
-  ]
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/videoSet/systext", SysTextUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/videoset/systext", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+  console.log(updateLog);
+
+  return updateLog;
 }

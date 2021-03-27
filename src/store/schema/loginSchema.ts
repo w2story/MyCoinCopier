@@ -8,7 +8,7 @@ const loginSchema = yup.object().shape({
     .trim()
     .required('아이디는 필수입력입니다.')
     .matches(
-      /^[0-9a-z]+$/,
+      /^[0-9a-zA-Z]+$/,
       '영어, 숫자로 입력바랍니다.',
     ),
   user_pass: yup

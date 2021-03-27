@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Toast from "svelte-toast";
   import { onMount } from "svelte";
   // 색상 선택기
   import { HsvPicker } from "svelte-color-picker";
@@ -15,6 +16,8 @@
     setSysText,
     setSysColor,
   } from "~/store/database/chatSetting";
+  // 스토어 : color 처리
+  import { ColorSetVar } from "~/store/colorSet";
 
   let chatSet = {};
 
@@ -33,7 +36,7 @@
   };
 
   onMount(async () => {
-    const res = await getChatSetInfo(1);
+    const res = await getChatSetInfo();
     console.log(res);
 
     backColor.rgba = res.style_bg;
@@ -41,53 +44,31 @@
     textFontColor.rgba = res.style_text_color;
   });
 
-  getChatSetInfo(1).then((Response) => {
+  getChatSetInfo().then((Response) => {
     chatSet = Response;
   });
 
+  let error = {
+    style_title_size: "",
+    style_text_size: "",
+  };
+
+  // 토스트기 처리 구문
+  const toast = new Toast({ position: "bottom-right" });
+
+  // 채팅 스타일 처리
   let chatQset = "def";
 
+  // 폰트 설정
   let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
   const groupBy = (item) => item.group;
 
+  /*
   function handleSelect(event) {
     console.log("selected item", event.detail);
-    // .. do something here 🙂
+    // .. do something here 
   }
-
-  function backColorCallback(rgba) {
-    let ColorRGBA = "rgba(";
-    ColorRGBA += rgba.detail.r + ", ";
-    ColorRGBA += rgba.detail.g + ", ";
-    ColorRGBA += rgba.detail.b + ", ";
-    ColorRGBA += rgba.detail.a + ")";
-
-    backColor.rgba = ColorRGBA;
-    chatSet.style_bg = ColorRGBA;
-    systemColorUpdate();
-  }
-  const titleFontColorCallback = (rgba) => {
-    let ColorRGBA = "rgba(";
-    ColorRGBA += rgba.detail.r + ", ";
-    ColorRGBA += rgba.detail.g + ", ";
-    ColorRGBA += rgba.detail.b + ", ";
-    ColorRGBA += rgba.detail.a + ")";
-
-    titleFontColor.rgba = ColorRGBA;
-    chatSet.style_title_color = ColorRGBA;
-    systemColorUpdate();
-  };
-  const textFontColorCallback = (rgba) => {
-    let ColorRGBA = "rgba(";
-    ColorRGBA += rgba.detail.r + ", ";
-    ColorRGBA += rgba.detail.g + ", ";
-    ColorRGBA += rgba.detail.b + ", ";
-    ColorRGBA += rgba.detail.a + ")";
-
-    textFontColor.rgba = ColorRGBA;
-    chatSet.style_text_color = ColorRGBA;
-    systemColorUpdate();
-  };
+  */
 
   const colorSelectAcitve = (colorSelect) => {
     switch (colorSelect) {
@@ -121,12 +102,117 @@
     }
   };
   // 후원 시스템 전처리
-  const ChatTextUpdate = () => {
-    setSysText(chatSet);
+  const TitleSizeUpdate = async () => {
+    let styleTitleSize = chatSet.style_title_size.trim();
+    if (isNaN(styleTitleSize)) {
+      error.style_title_size = "숫자가 아닙니다.";
+    } else {
+      styleTitleSize = Number(styleTitleSize.replace(/(^0+)/, ""));
+      if (styleTitleSize <= 11) {
+        error.style_title_size = "최소 12 이상을 넣어주세요.";
+      } else if (styleTitleSize > 48) {
+        error.style_title_size = "48이 최대 수 입니다.";
+      } else {
+        let Data = {
+          style_title_size: styleTitleSize,
+          user_key: chatSet.user_key,
+        };
+        const chateUpate = await setSysText(Data);
+        if (chateUpate.success) {
+          error.style_title_size = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.style_title_size = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
+  };
+  const TextSizeUpdate = async () => {
+    let styleTextSize = chatSet.style_text_size.trim();
+    if (isNaN(styleTextSize)) {
+      error.style_text_size = "숫자가 아닙니다.";
+    } else {
+      styleTextSize = Number(styleTextSize.replace(/(^0+)/, ""));
+      if (styleTextSize <= 11) {
+        error.style_text_size = "최소 12 이상을 넣어주세요.";
+      } else if (styleTextSize > 48) {
+        error.style_text_size = "48이 최대 수 입니다.";
+      } else {
+        let Data = {
+          style_text_size: styleTextSize,
+          user_key: chatSet.user_key,
+        };
+        const chateUpate = await setSysText(Data);
+        if (chateUpate.success) {
+          error.style_text_size = "";
+          toast.success("정보 변경 완료.");
+        } else {
+          error.style_text_size = "업데이트 미 처리";
+          toast.error("정보 변경 불가.");
+        }
+      }
+    }
   };
   // 후원 시스템 색상 전처리
-  const systemColorUpdate = () => {
-    setSysColor(chatSet);
+  const backColorCallback = async (rgba) => {
+    const color = rgba.detail;
+    let ColorRGBA = await ColorSetVar(color);
+
+    backColor.rgba = ColorRGBA;
+    chatSet.style_bg = ColorRGBA;
+
+    let chatData = {
+      style_bg: ColorRGBA,
+      user_key: chatSet.user_key,
+    };
+    console.log(chatData);
+
+    const chatUpate = await setSysColor(chatData);
+    if (chatUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
+  };
+  const titleFontColorCallback = async (rgba) => {
+    const color = rgba.detail;
+    let ColorRGBA = await ColorSetVar(color);
+
+    titleFontColor.rgba = ColorRGBA;
+    chatSet.style_title_color = ColorRGBA;
+
+    let chatData = {
+      style_title_color: ColorRGBA,
+      user_key: chatSet.user_key,
+    };
+    console.log(chatData);
+
+    const chatUpate = await setSysColor(chatData);
+    if (chatUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
+  };
+  const textFontColorCallback = async (rgba) => {
+    const color = rgba.detail;
+    let ColorRGBA = await ColorSetVar(color);
+
+    textFontColor.rgba = ColorRGBA;
+    chatSet.style_text_color = ColorRGBA;
+
+    let chatData = {
+      style_text_color: ColorRGBA,
+      user_key: chatSet.user_key,
+    };
+    console.log(chatData);
+    const chatUpate = await setSysColor(chatData);
+    if (chatUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
   };
 </script>
 
@@ -281,10 +367,13 @@
           <hr />
           <div class="input-group">
             <h3 class="input-title">타이틀 폰트 크기</h3>
-            <input
-              bind:value={chatSet.style_title_size}
-              on:change={ChatTextUpdate}
-            />
+            <div class="input-box">
+              <input
+                bind:value={chatSet.style_title_size}
+                on:change={TitleSizeUpdate}
+              />
+              {#if error.style_title_size}<p>{error.style_title_size}</p>{/if}
+            </div>
           </div>
           <hr />
           <div class="color-group">
@@ -310,10 +399,13 @@
           <hr />
           <div class="input-group">
             <h3 class="input-title">내용 폰트 크기</h3>
-            <input
-              bind:value={chatSet.style_text_size}
-              on:change={ChatTextUpdate}
-            />
+            <div class="input-box">
+              <input
+                bind:value={chatSet.style_text_size}
+                on:change={TextSizeUpdate}
+              />
+              {#if error.style_text_size}<p>{error.style_text_size}</p>{/if}
+            </div>
           </div>
         </div>
       </div>
@@ -490,18 +582,33 @@
               width: 100%;
               height: auto;
               display: flex;
+              padding-bottom: 5px;
 
-              input {
+              .input-box {
                 width: 40%;
-                height: 30px;
-                color: #fff;
                 float: left;
-                background-color: #202225;
+                height: 60px;
+                position: relative;
+                input {
+                  width: 100%;
+                  height: 30px;
+                  color: #fff;
+                  float: left;
+                  background-color: #202225;
 
-                border-radius: 5px;
-                border: 0px;
-                padding: 10px;
-                font-size: 18px;
+                  border-radius: 5px;
+                  border: 0px;
+                  padding: 10px;
+                  font-size: 18px;
+                }
+                p {
+                  color: #ff4081 !important;
+                  font-size: 12px !important;
+                  padding-bottom: 5px;
+                  position: absolute;
+                  bottom: -13px;
+                  left: 10px;
+                }
               }
               .input-title {
                 width: 200px;

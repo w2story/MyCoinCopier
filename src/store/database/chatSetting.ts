@@ -1,51 +1,51 @@
 
 import axios from 'axios'
 
-export async function getChatSetInfo(key) {
+const hostName = window.location.hostname;
+const url = "http://" + hostName + ":3000/api";
+
+export async function getChatSetInfo() {
+  const userKey = sessionStorage.getItem("userKey");
   let Arr = {};
-  const res = await axios
-    .get("http://127.0.0.1:3000/api/chatSet/1", {})
-    .then((Response) => {
-      Arr = Response.data[0];
+  await axios
+    .get(url + "/chatset/" + userKey, {})
+    .then((res) => {
+      Arr = res.data;
     })
     .catch((Error) => {
       console.log(Error);
     })
-  return Arr;
+  return Arr.chateSet;
 }
+
 export async function setSysText(data) {
-  let SysTextUpateData = [
-    data.style_title_size,
-    data.style_text_size,
-    data.user_key
-  ]
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/chatSet/systext", SysTextUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/chatSet/systext", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
+      updateLog.success = false;
     })
-  //return userArr;
+
+  return updateLog;
 }
 
 export async function setSysColor(data) {
-  let SysTextUpateData = [
-    data.style_bg,
-    data.style_title_color,
-    data.style_text_color,
-    data.user_key
-  ]
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/chatSet/syscolor", SysTextUpateData)
-    .then((Response) => {
+  await axios
+    .post(url + "/chatSet/syscolor", data)
+    .then((res) => {
+      updateLog = res.data;
     })
     .catch((Error) => {
       console.log(Error);
-    })
-  //return userArr;
+      updateLog.success = false;
+    });
+
+  return updateLog;
 }

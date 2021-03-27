@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import Toast from "svelte-toast";
   // input -> select 처리기
   import Select from "svelte-select";
-  // 폰트 스토어
-  import { fontItems } from "~/store/fontList";
   // 비디오세팅 값
   import {
     getVideoInfo,
@@ -19,77 +18,98 @@
     faMale,
     faPalette,
   } from "@fortawesome/free-solid-svg-icons";
+  // 스토어 : 알람 / 폰트
+  import { alarmItems } from "~/store/alarm";
+  import { fontItems } from "~/store/fontList";
 
   let videoSet = {};
 
   let noticeLayoutSelected = "";
 
   onMount(async () => {
-    const res = await getVideoInfo(1);
+    const res = await getVideoInfo();
     console.log(res);
 
     noticeLayoutSelected = String(res.allim_layout);
   });
 
-  getVideoInfo(1).then((Response) => {
+  getVideoInfo().then((Response) => {
     videoSet = Response;
   });
 
-  // 알람 처리
-  const alarmItems = [
-    {
-      value: "무음",
-      label: "무음",
-    },
-    {
-      value: "안녕로봇",
-      label: "안녕로봇",
-    },
-    {
-      value: "디바",
-      label: "디바",
-    },
-    {
-      value: "아이폰",
-      label: "아이폰",
-    },
-    {
-      value: "기상나팔",
-      label: "기상나팔",
-    },
-    {
-      value: "어서일어나",
-      label: "어서일어나",
-    },
-  ];
+  // 사용자 정보값 업데이트 처리
+  // 정보값 처리를 위한 구문
+  let error = {
+    sys_title_template: "",
+  };
 
   // 폰트 처리기
   let fontSelected = { value: "RixYeoljeongdo_Regular", label: "Rix열정도체" };
   const groupBy = (item) => item.group;
 
+  // 토스트기 처리 구문
+  const toast = new Toast({ position: "bottom-right" });
+
   // 토글 데이터 전처리
-  const videoToggleUpdate = () => {
-    setVideoToggle(videoSet);
+  const videoToggleUpdate = async () => {
+    const ToggleUpae = await setVideoToggle(videoSet);
+    if (ToggleUpae.success) {
+      toast.success("후원 설정 변경 완료.");
+    } else {
+      toast.error("후원 설정 변경 불가.");
+    }
   };
+
   // 후원 설정 전처리
-  const videoSupportSystemUpdate = () => {
-    setSupportSystem(videoSet);
-  };
-  // 후원 시스템 전처리
-  const systemTextUpdate = () => {
-    setSysText(videoSet);
-  };
   // 알람 레이아웃 처리
-  const noticeLayoutChange = (event) => {
-    console.log(event.currentTarget.value);
+  const noticeLayoutChange = async (event) => {
     noticeLayoutSelected = event.currentTarget.value;
     videoSet.allim_layout = noticeLayoutSelected;
-    videoSupportSystemUpdate();
+    const videoData = {
+      allim_layout: noticeLayoutSelected,
+      user_key: videoSet.user_key,
+    };
+    const voiceUpate = await setSupportSystem(videoData);
+    if (voiceUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
   };
   // 알람 소리 처리
-  const allimSoundSelect = (event) => {
+  const allimSoundSelect = async (event) => {
     videoSet.allim_sound = event.detail.value;
-    videoSupportSystemUpdate();
+    const videoData = {
+      allim_sound: event.detail.value,
+      user_key: videoSet.user_key,
+    };
+    const voiceUpate = await setSupportSystem(videoData);
+    if (voiceUpate.success) {
+      toast.success("정보 변경 완료.");
+    } else {
+      toast.error("정보 변경 불가.");
+    }
+  };
+  // 후원 시스템 전처리
+  const TitleTemplateUpdate = async () => {
+    const sysTitleTemplate = videoSet.sys_title_template.trim();
+    if (sysTitleTemplate.length == 0) {
+      error.sys_title_template = "템플릿 내용을 넣어주세요.";
+    } else if (sysTitleTemplate.length > 32) {
+      error.sys_title_template = "32자 까지 입력됩니다.";
+    } else {
+      const voiceData = {
+        sys_title_template: sysTitleTemplate,
+        user_key: videoSet.user_key,
+      };
+      const voiceUpate = await setSysText(voiceData);
+      if (voiceUpate.success) {
+        toast.success("정보 변경 완료.");
+        error.sys_title_template = "";
+      } else {
+        toast.error("정보 변경 불가.");
+      }
+    }
   };
 </script>
 
@@ -131,14 +151,14 @@
         <h1>후원 영상 설정 / <small> Support Video System</small></h1>
       </div>
       <div class="card">
-        <div class="input-group">
+        <!--<div class="input-group">
           <h3 class="input-title">알림 효과</h3>
           <input
             bind:value={videoSet.allim_effect}
             on:change{videoSupportSystemUpdate}
           />
         </div>
-        <hr />
+        <hr />-->
         <div class="thumbnail-group">
           <h3 class="thumbnail-title">알림 레이아웃</h3>
           <div class="thumbnail-btn">
@@ -202,10 +222,15 @@
         <div class="card">
           <div class="input-group">
             <h3 class="input-title">내용 템플릿</h3>
-            <input
-              bind:value={videoSet.sys_title_template}
-              on:change={systemTextUpdate}
-            />
+            <div class="input-box">
+              <input
+                bind:value={videoSet.sys_title_template}
+                on:change={TitleTemplateUpdate}
+              />
+              {#if error.sys_title_template}<p>
+                  {error.sys_title_template}
+                </p>{/if}
+            </div>
           </div>
           <hr />
           <div class="select-group">

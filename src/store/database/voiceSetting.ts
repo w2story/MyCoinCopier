@@ -1,11 +1,13 @@
-
 import axios from 'axios'
+
+const hostName = window.location.hostname;
+const url = "http://" + hostName + ":3000/api";
 
 export async function getVoiceInfo() {
   const userKey = sessionStorage.getItem("userKey");
   let voiceArr = {};
-  const res = await axios
-    .get("http://127.0.0.1:3000/api/voiceset/" + userKey, {})
+  await axios
+    .get(url + "/voiceset/" + userKey, {})
     .then((res) => {
       voiceArr = res.data;
     })
@@ -24,8 +26,8 @@ export async function setVoiceToggle(data) {
   }
   let updateLog = {};
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/voiceset/toggle/", ToggleUpateData)
+  await axios
+    .post(url + "/voiceset/toggle/", ToggleUpateData)
     .then((res) => {
       updateLog = res.data;
     })
@@ -33,15 +35,14 @@ export async function setVoiceToggle(data) {
       console.log(Error);
       updateLog.success = false;
     })
-  console.log(updateLog);
 
   return updateLog;
 }
 export async function setSupportSystem(data) {
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/voiceset/support", data)
+  await axios
+    .post(url + "/voiceset/support", data)
     .then((res) => {
       updateLog = res.data;
     })
@@ -55,8 +56,8 @@ export async function setSupportSystem(data) {
 export async function setSysText(data) {
   let updateLog;
 
-  const res = await axios
-    .post("http://127.0.0.1:3000/api/voiceset/systext", data)
+  await axios
+    .post(url + "/voiceset/systext", data)
     .then((res) => {
       updateLog = res.data;
     })
@@ -71,7 +72,7 @@ export async function setSysColor(data) {
   let updateLog;
 
   const res = await axios
-    .post("http://127.0.0.1:3000/api/voiceSet/syscolor", data)
+    .post(url + "/voiceSet/syscolor", data)
     .then((res) => {
       updateLog = res.data;
     })

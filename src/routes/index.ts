@@ -8,6 +8,7 @@ import totoService from '~/components/donSetUp/totoDonSet.svelte'
 import ChatQset from '~/components/chatSet/ChatQset.svelte'
 import UserInfo from '~/components/userInfo/userInfo.svelte'
 import DonChkWindow from '~/components/modalWindow/DonChkWindow.svelte'
+import CoinCopier from '~/components/donCopier/coincopier'
 import Login from '~/components/login/Login.svelte'
 
 export default {
@@ -21,5 +22,6 @@ export default {
   '/totoService': totoService,
   '/login': Login,
   '/donChk': DonChkWindow,
+  '/coincopier/:userid': CoinCopier,
   '*': NotFound
 }

@@ -1,26 +1,41 @@
 <script lang="ts">
   import Fa from "svelte-fa";
   import { onMount } from "svelte";
-  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+  import Toast from "svelte-toast";
 
+  import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
   import { getUserInfo } from "~/store/database/userInfo";
 
+  //토글 체크
+  import { userDonToggleUse, userDonToggleChk } from "~/store/page/qsetUp";
+
   let userInfo = {};
+  let toggleArr = {};
   let userStreamToken = "";
 
   onMount(async () => {
     userInfo = await getUserInfo();
+    toggleArr = await userDonToggleUse();
     userStreamToken = userInfo.user_stream_token;
   });
 
-  console.log(userInfo);
+  userDonToggleUse().then((res) => {
+    toggleArr = res;
+  });
 
-  let voiceChecked = false;
-  let videoChecked = false;
-  let osuChecked = false;
-  let rouletteChecked = false;
-  let totoServiceChecked = false;
-  let color = "#2196F3";
+  const toast = new Toast({ position: "bottom-right" });
+
+  const userDonToggleSelect = async (select: string, data: object) => {
+    const toggleUpdate = await userDonToggleChk(select, data);
+    if (toggleUpdate.success) {
+      toast.success("후원 설정 변경 완료.");
+    } else {
+      toast.error("후원 설정 변경 불가.");
+    }
+  };
+
+  console.log(userInfo);
+  //let rouletteChecked = false;
 </script>
 
 <div class="layout">
@@ -66,7 +81,11 @@
         <div class="btn-group">
           <h3>음성 도네</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={voiceChecked} />
+            <input
+              type="checkbox"
+              bind:checked={toggleArr.voice_use}
+              on:change={userDonToggleSelect("voice", toggleArr.voice_use)}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -74,7 +93,11 @@
         <div class="btn-group">
           <h3>영상 도네</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={videoChecked} />
+            <input
+              type="checkbox"
+              bind:checked={toggleArr.video_use}
+              on:change={userDonToggleSelect("video", toggleArr.video_use)}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -82,23 +105,31 @@
         <div class="btn-group">
           <h3>OSU 도네</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={osuChecked} />
+            <input
+              type="checkbox"
+              bind:checked={toggleArr.osumap_use}
+              on:change={userDonToggleSelect("osumap", toggleArr.osumap_use)}
+            />
             <span class="slider round" />
           </label>
         </div>
         <hr />
-        <div class="btn-group">
+        <!--<div class="btn-group">
           <h3>룰렛 도네</h3>
           <label class="switch">
             <input type="checkbox" bind:checked={rouletteChecked} />
             <span class="slider round" />
           </label>
         </div>
-        <hr />
+        <hr />-->
         <div class="btn-group">
           <h3>토토서비스</h3>
           <label class="switch">
-            <input type="checkbox" bind:checked={totoServiceChecked} />
+            <input
+              type="checkbox"
+              bind:checked={toggleArr.toto_use}
+              on:change={userDonToggleSelect("toto", toggleArr.toto_use)}
+            />
             <span class="slider round" />
           </label>
         </div>
@@ -178,5 +209,6 @@
 </div>
 
 <style lang="scss">
-  @import "./scss/def.scss";
+  @import "../../scss/inputBox.scss";
+  @import "./scss/input.se.scss";
 </style>

@@ -29,14 +29,16 @@
   import { getUserInfo, userUpate } from "~/store/database/userInfo";
   let userInfo = {};
 
-  console.log();
+  const hostName = window.location.hostname;
+  const url = "http://" + hostName + ":3000/api";
 
   getUserInfo().then((Response) => {
     userInfo = Response;
   });
 
-  $: if (userUpate > 0) {
-    console.log(userUpate);
+  $: if ($userUpate > 0) {
+    console.log($userUpate);
+    userUpate.set(0);
 
     getUserInfo().then((Response) => {
       userInfo = Response;
@@ -162,7 +164,7 @@
   // 모달 윈도우 처리
   const openModalWindow = () => {
     var modal = window.open(
-      "http://localhost:8080/#/donChk",
+      "http://" + hostName + "/#/donChk",
       "MCC::후원체크창",
       "width=400,height=800,resizable,scrollbars=yes,status=1",
       false

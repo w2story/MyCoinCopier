@@ -14,6 +14,8 @@
   } else {
     console.log("login token chk");
     let tokenUse = userTokenChk();
+    console.log("tokenUse", tokenUse);
+
     if (!tokenUse) {
       pageReplace("#/login");
     }
@@ -26,7 +28,7 @@
   import Menu from "~/components/menu/menu.svelte";
 </script>
 
-{#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1}
+{#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1 && $location.indexOf("coincopier") == -1}
   <main>
     <Header />
     <Menu />
@@ -36,6 +38,8 @@
       </div>
     {/key}
   </main>
+{:else if $location.indexOf("coincopier") == 1}
+  <Router {routes} restoreScrollState={true} />
 {:else if $location.indexOf("login") == 1}
   <Router {routes} restoreScrollState={true} />
 {:else}
