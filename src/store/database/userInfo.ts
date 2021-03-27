@@ -55,6 +55,7 @@ export async function setUserPass(data) {
     .then((res) => {
       console.log(res.data);
       updateLog = res.data;
+      userUpate.set(1);
     })
     .catch((err) => {
       console.log(err);
