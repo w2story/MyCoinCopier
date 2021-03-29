@@ -26,8 +26,9 @@
 
       if (userCreateChk == true) {
         // 로그인 확인 후 이동
+        const backurl = sessionStorage.getItem("backurl");
         let link = document.location.href.split("#");
-        location.replace(link[0]);
+        location.replace(link[0] + "#" + backurl);
       } else {
         toast.error("가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.");
       }

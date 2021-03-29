@@ -106,7 +106,7 @@ export async function userNameChk(data) {
 export async function userIdSearch(userid: string) {
   let arr;
   await axios
-    .get("http://127.0.0.1:3000/api/userinfo/chk/name/" + data)
+    .get(url + "/userinfo/search/id/" + userid)
     .then((res) => {
       arr = res.data;
     }).catch((Error) => {

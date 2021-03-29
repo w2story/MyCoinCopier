@@ -28,6 +28,8 @@
   // 스토어 : 알람 / 폰트
   import { alarmItems } from "~/store/alarm";
   import { fontItems } from "~/store/fontList";
+  import { imgUpload, imgLoad } from "~/store/database/imgSetting";
+  import { writable } from "svelte/store";
 
   let voiceSet = {};
   let noticeLayoutSelected = "";
@@ -41,6 +43,7 @@
     active: false,
     rgba: "rgba(32,34,37,1)",
   };
+  let imgFileList = writable([]);
 
   // 사용자 정보값 처리
   onMount(async () => {
@@ -57,6 +60,9 @@
     voiceSet = Response;
   });
 
+  imgLoad().then((res) => {
+    imgFileList.set(res);
+  });
   // 사용자 정보값 업데이트 처리
   // 정보값 처리를 위한 구문
   let error = {
@@ -113,22 +119,25 @@
     rejected: [],
     tmpImgArr: [],
   };
+  const hostName = window.location.hostname;
+  const url = "http://" + hostName + ":3000";
 
   function handleFilesSelect(e) {
     const { acceptedFiles, fileRejections } = e.detail;
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.readAsDataURL(file);
-      reader.onload = (e) => {
-        files.tmpImgArr.push(reader.result);
-        console.log("file reading ok");
-      };
+    acceptedFiles.forEach(async (file) => {
+      const imgUp = await imgUpload(file);
+      console.log(imgUp);
+
+      if (imgUp.success) {
+        imgUp.imgurl.img_url = url + imgUp.imgurl.img_url;
+        $imgFileList.unshift(imgUp.imgurl);
+        $imgFileList = $imgFileList;
+        toast.success("이미지 업로드 완료.");
+      } else {
+        toast.error("이미지 업로드 불가.");
+      }
     });
-    files.accepted = [...files.accepted, ...acceptedFiles];
-    files.rejected = [...files.rejected, ...fileRejections];
-    console.log(files);
+    console.log($imgFileList);
   }
 
   // 토글 데이터 전처리
@@ -401,27 +410,16 @@
               </Dropzone>
             </div>
             <div class="imgUpload-list">
-              {#if files.tmpImgArr}
-                {#each files.tmpImgArr as item}
-                  <div class="imgItme">
-                    <img class="tmpimg" src={item} alt="d" />
-                    <div class="img-btn-group">
-                      <a class="close-btn">
-                        <Fa icon={faTimes} size="" />
-                      </a>
-                    </div>
-                  </div>
-                {/each}
-              {:else}
+              {#each $imgFileList as item}
                 <div class="imgItme">
-                  <img class="tmpimg" src="a" alt="d" />
+                  <img class="tmpimg" src={item.img_url} alt="d" />
                   <div class="img-btn-group">
                     <a class="close-btn">
                       <Fa icon={faTimes} size="" />
                     </a>
                   </div>
                 </div>
-              {/if}
+              {/each}
             </div>
           </div>
         </div>
@@ -596,7 +594,27 @@
         width: 100%;
         height: auto;
         display: inline-flex;
-        flex-wrap: wrap;
+        padding: 0px 15px;
+        padding-top: 15px;
+        padding-bottom: 10px;
+        flex-wrap: no-wrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        &::-webkit-scrollbar {
+          height: 14px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: #202225;
+          border-radius: 10px;
+          background-clip: padding-box;
+          border: 4px solid transparent;
+        }
+        &::-webkit-scrollbar-track {
+          background-color: #3a3f47;
+          border-radius: 10px;
+          box-shadow: inset 0px 0px 0px white;
+        }
 
         .imgItme {
           width: 189px;
@@ -604,6 +622,7 @@
           position: relative;
           display: inline-block;
           overflow: hidden;
+          flex: 0 0 auto;
 
           background-color: #1c2027;
           border-radius: 10px;

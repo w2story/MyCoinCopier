@@ -6,16 +6,17 @@
   if (!userToken && $location != "/login") {
     console.log("not login");
     pageReplace("#/login");
+    sessionStorage.setItem("backurl", $location);
   } else if (userToken && $location == "/login") {
     console.log("login use");
-    pageReplace("");
+    const backurl = sessionStorage.getItem("backurl");
+    pageReplace("#" + backurl);
   } else if (!userToken && $location == "/login") {
     console.log("login");
   } else {
     console.log("login token chk");
     let tokenUse = userTokenChk();
     console.log("tokenUse", tokenUse);
-
     if (!tokenUse) {
       pageReplace("#/login");
     }
@@ -38,10 +39,6 @@
       </div>
     {/key}
   </main>
-{:else if $location.indexOf("coincopier") == 1}
-  <Router {routes} restoreScrollState={true} />
-{:else if $location.indexOf("login") == 1}
-  <Router {routes} restoreScrollState={true} />
 {:else}
   <Router {routes} restoreScrollState={true} />
 {/if}
