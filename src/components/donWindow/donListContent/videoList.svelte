@@ -1,14 +1,33 @@
 <script lang="ts">
   import Fa from "svelte-fa";
   import { faLink, faReply, faDeaf } from "@fortawesome/free-solid-svg-icons";
-  import { videoListSearch } from "~/store/database/videoDonList";
+  import {
+    videoList,
+    videoListSearch,
+    lastVideoDonKey,
+    videoListUpdata,
+  } from "~/store/database/videoDonList";
 
-  let videoRow = [];
+  let videoLastKey = 0;
+
+  console.log($lastVideoDonKey);
 
   videoListSearch().then((res) => {
-    videoRow = res.videorow;
-    console.log(videoRow);
+    videoList.set(res.videorow);
+    videoLastKey = $lastVideoDonKey;
+    console.log(videoLastKey);
   });
+
+  $: if ($videoListUpdata > 0) {
+    console.log($videoListUpdata);
+    videoListUpdata.set(0);
+
+    videoListSearch().then((res) => {
+      videoList.set(res.videorow);
+      voiceLastKey = $lastVideoDonKey;
+      console.log(voiceLastKey);
+    });
+  }
 </script>
 
 <div class="don-component">
@@ -16,7 +35,7 @@
     <h3>영상도네이션</h3>
   </div>
   <div class="don-list don-video">
-    {#each videoRow as item}
+    {#each $videoList as item}
       <div class="don-item">
         <div class="don-img">
           <img

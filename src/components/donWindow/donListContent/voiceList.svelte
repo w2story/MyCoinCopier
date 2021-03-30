@@ -1,14 +1,31 @@
 <script lang="ts">
   import Fa from "svelte-fa";
-  import { faLink, faReply, faDeaf } from "@fortawesome/free-solid-svg-icons";
-  import { voiceListSearch } from "~/store/database/voiceDonList";
+  import { faReply, faDeaf } from "@fortawesome/free-solid-svg-icons";
+  import {
+    voiceListSearch,
+    voiceListUpdata,
+    lastVoiceDonKey,
+    voiceList,
+  } from "~/store/database/voiceDonList";
 
-  let voiceRow = [];
+  let voiceLastKey = 0;
 
   voiceListSearch().then((res) => {
-    voiceRow = res.voicerow;
-    console.log(voiceRow);
+    voiceList.set(res.voicerow);
+    voiceLastKey = $lastVoiceDonKey;
+    console.log(voiceLastKey);
   });
+
+  $: if ($voiceListUpdata > 0) {
+    console.log($voiceListUpdata);
+    voiceListUpdata.set(0);
+
+    voiceListSearch().then((res) => {
+      voiceList.set(res.voicerow);
+      voiceLastKey = $lastVoiceDonKey;
+      console.log(voiceLastKey);
+    });
+  }
 </script>
 
 <div class="don-component">
@@ -16,7 +33,7 @@
     <h3>음성도네이션</h3>
   </div>
   <div class="don-list don-text">
-    {#each voiceRow as item}
+    {#each $voiceList as item}
       <div class="don-item">
         <div class="don-img">
           <img src={item.don_img_url} />

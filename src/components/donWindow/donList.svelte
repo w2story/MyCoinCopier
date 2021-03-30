@@ -11,6 +11,13 @@
   import voiceList from "./donListContent/voiceList.svelte";
   import videoList from "./donListContent/videoList.svelte";
 
+  // 검색 처리 구문
+  import { lastVoiceDonKey } from "~/store/database/voiceDonList";
+  import { lastVideoDonKey } from "~/store/database/videoDonList";
+  // 스토어
+  import { donNewChk } from "~/store/page/donlist";
+  import { onMount } from "svelte";
+
   let containerSections = [
     {
       id: 1,
@@ -53,6 +60,12 @@
       return s;
     });
   };
+
+  onMount(() => {
+    const repeatDonNewChk = setInterval(() => {
+      donNewChk($lastVoiceDonKey, $lastVideoDonKey);
+    }, 700);
+  });
 </script>
 
 <div class="content">
