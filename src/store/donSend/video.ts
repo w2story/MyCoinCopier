@@ -25,7 +25,7 @@ export async function youtubeShow(youID: string) {
   return youtubeRow;
 }
 
-export async function voiceDonSend(data) {
+export async function videoDonSend(data) {
   let donSend = data;
   donSend.se_user_key = Number(userKey);
   let donSendUpadata = {};
@@ -33,8 +33,11 @@ export async function voiceDonSend(data) {
 
   console.log(donSend);
 
+
+  console.log(donSend);
+
   await axios
-    .post(url + "/donsend/voice/", donSend, config)
+    .post(url + "/donsend/video/", donSend, config)
     .then((Response) => {
       donSendUpadata = Response.data;
       donSendChk = donSendUpadata.success;

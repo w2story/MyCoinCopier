@@ -1,5 +1,5 @@
 <script lang="ts">
-  import InlineSVG from 'svelte-inline-svg';
+  import InlineSVG from "svelte-inline-svg";
 
   import Fa from "svelte-fa";
   import {
@@ -9,10 +9,10 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   //osu 아이콘 src
-  const osuSrc = '../svg/osu.svg'
-  const taikoSrc = '../svg/taiko.svg'
-  const catchSrc = '../svg/catch.svg'
-  const maniaSrc = '../svg/mania.svg'
+  const osuSrc = "../svg/osu.svg";
+  const taikoSrc = "../svg/taiko.svg";
+  const catchSrc = "../svg/catch.svg";
+  const maniaSrc = "../svg/mania.svg";
 </script>
 
 <div class="content">
@@ -331,8 +331,25 @@
   .content {
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: AUTO;
+
+    &::-webkit-scrollbar {
+      width: 14px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #ff4081;
+      border-radius: 10px;
+      background-clip: padding-box;
+      border: 4px solid transparent;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #2a2f38;
+      border-radius: 10px;
+      box-shadow: inset 0px 0px 0px white;
+    }
   }
-  
+
   .osu-map-list {
     width: 100%;
     display: flex;

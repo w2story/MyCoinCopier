@@ -29,9 +29,6 @@
   import { getUserInfo, userUpate } from "~/store/database/userInfo";
   let userInfo = {};
 
-  const hostName = window.location.hostname;
-  const url = "http://" + hostName + ":3000/api";
-
   getUserInfo().then((Response) => {
     userInfo = Response;
   });
@@ -163,6 +160,8 @@
   };
   // 모달 윈도우 처리
   const openModalWindow = () => {
+    const hostName = window.location.host;
+
     var modal = window.open(
       "http://" + hostName + "/#/donChk",
       "MCC::후원체크창",

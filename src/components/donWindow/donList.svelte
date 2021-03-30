@@ -1,369 +1,76 @@
 <script lang="ts">
   import Fa from "svelte-fa";
-  import { faLink, faReply, faDeaf } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faVideo,
+    faMusic,
+    faThList,
+  } from "@fortawesome/free-solid-svg-icons";
+
+  // 컴포넌트
+  import totalList from "./donListContent/totalList.svelte";
+  import voiceList from "./donListContent/voiceList.svelte";
+  import videoList from "./donListContent/videoList.svelte";
+
+  let containerSections = [
+    {
+      id: 1,
+      title: "통합",
+      icon: faThList,
+      selected: true,
+      component: totalList,
+    },
+    {
+      id: 2,
+      title: "음성",
+      icon: faMusic,
+      selected: false,
+      component: voiceList,
+    },
+    {
+      id: 3,
+      title: "영상",
+      icon: faVideo,
+      selected: false,
+      component: videoList,
+    },
+  ];
+
+  let containerSelected = {
+    id: 1,
+    title: "통합",
+    icon: faThList,
+    selected: false,
+    component: totalList,
+  };
+
+  const toggleContainer = (section) => {
+    containerSections = containerSections.map((s) => {
+      s.selected = false;
+      if (s.id === section.id) {
+        containerSelected = section;
+        s.selected = true;
+      }
+      return s;
+    });
+  };
 </script>
 
 <div class="content">
-  <div class="don-list don-text">
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/qcN7fpp.gif" />
+  <div class="don-list-menu">
+    {#each containerSections as section}
+      <div
+        class="don-btn"
+        class:active={section.selected}
+        on:click={() => toggleContainer(section)}
+      >
+        <span class="icon">
+          <Fa icon={section.icon} size="lg" />
+        </span>
+        <h3>{section.title}</h3>
       </div>
-      <div class="don-content">
-        <h4 class="don-sender">Faud</h4>
-        <p class="don-text">이.. 이게 머고 내가 20년 전으로 돌아왔나</p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/CC3T8Km.gif" />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          마키아입니다 메하는민성 마키아데스마키아입니다 메하는민성
-          마키아데스마키아입니다 메하는민성 마키아데스 마키아입니다 메하는민성
-          마키아데스
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/CC3T8Km.gif" />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          마키아입니다 메하는민성 마키아데스마키아입니다 메하는민성
-          마키아데스마키아입니다 메하는민성 마키아데스 마키아입니다 메하는민성
-          마키아데스
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/CC3T8Km.gif" />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          마키아입니다 메하는민성 마키아데스마키아입니다 메하는민성
-          마키아데스마키아입니다 메하는민성 마키아데스 마키아입니다 메하는민성
-          마키아데스
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/CC3T8Km.gif" />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          마키아입니다 메하는민성 마키아데스마키아입니다 메하는민성
-          마키아데스마키아입니다 메하는민성 마키아데스 마키아입니다 메하는민성
-          마키아데스
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img src="https://i.imgur.com/CC3T8Km.gif" />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          마키아입니다 메하는민성 마키아데스마키아입니다 메하는민성
-          마키아데스마키아입니다 메하는민성 마키아데스 마키아입니다 메하는민성
-          마키아데스
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
+    {/each}
   </div>
-  <div class="don-list don-video">
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="don-item">
-      <div class="don-img">
-        <img
-          src="https://i.ytimg.com/vi/m6xJL_e8-Gg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkSyDxdtXnfCmDtVbOG50YnHZwOg"
-        />
-      </div>
-      <div class="don-content">
-        <h4 class="don-sender">메씨</h4>
-        <p class="don-text">
-          Animal Crossing • Relaxing Music with Ocean Waves
-        </p>
-      </div>
-      <div class="don-btn">
-        <a href="#" class="btn-def link-btn">
-          <span class="icon">
-            <Fa icon={faLink} />
-          </span>
-        </a>
-        <a href="#" class="btn-def reply-btn">
-          <span class="icon">
-            <Fa icon={faReply} />
-          </span>
-        </a>
-        <a href="#" class="btn-def deaf-btn">
-          <span class="icon">
-            <Fa icon={faDeaf} />
-          </span>
-        </a>
-      </div>
-    </div>
-  </div>
+  <svelte:component this={containerSelected.component} />
 </div>
 
 <style lang="scss">
@@ -377,103 +84,37 @@
     width: 100%;
     height: 100%;
   }
-  .don-list {
+  .don-list-menu {
     width: 100%;
-    height: auto;
+    height: 50px;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: space-around;
-    .don-item {
-      width: 100%;
-      height: 120px;
+
+    border-bottom: 1px solid #1c2027;
+    // 그림자영역
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+      0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+    .don-btn {
+      width: auto;
+      height: 45px;
       display: flex;
-      position: relative;
-      border-bottom: 1px solid #1c2027;
+      padding-left: 10px;
+      padding-right: 20px;
+      border-bottom: 5px solid #2a2f38;
 
-      .don-img {
-        width: 80px;
-        height: 80px;
-        border-radius: 5px;
-        overflow: hidden;
-        margin: 10px;
-        display: inline-block;
-        border: 1px solid #1c2027;
-        background-color: #1c2027;
-        box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
-          0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          object-position: center;
-        }
+      &.active {
+        border-bottom-color: #ff4081;
       }
-      .don-content {
-        width: calc(100% - 110px);
-        height: 100px;
-        padding: 10px 0px;
-        padding-right: 10px;
-        .don-sender {
-          width: 100%;
-          height: 20px;
-          font-size: 18px;
-          line-height: 20px;
-          margin-bottom: 10px;
-          margin-top: 10px;
-          font-weight: bolder;
-        }
-        .don-text {
-          width: 100%;
-          height: 54px;
-          font-size: 14px;
-          line-height: 18px;
-          font-weight: 400;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
 
-          /* 여러 줄 자르기 추가 스타일 */
-          white-space: normal;
-          text-align: left;
-          word-wrap: break-word;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-        }
+      .icon {
+        height: 22px;
+        width: 50px;
+        padding-top: 12px;
+        text-align: center;
       }
-      .don-btn {
-        width: auto;
-        height: 30px;
-        position: absolute;
-        top: 10px;
-        right: 5px;
-        display: flex;
-
-        a.btn-def {
-          width: 30px;
-          height: 30px;
-          display: inline-block;
-          text-align: center;
-          background: #1c2027;
-          border-radius: 50%;
-
-          box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
-            0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
-
-          margin-right: 5px;
-
-          span {
-            width: 100%;
-            height: 100%;
-            display: block;
-            padding-top: 3px;
-          }
-
-          &:hover {
-            background-color: #3a3f47;
-          }
-        }
+      h3 {
+        padding-top: 12px;
       }
     }
   }

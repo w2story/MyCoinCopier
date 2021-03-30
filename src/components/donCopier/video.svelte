@@ -12,7 +12,7 @@
   import { userIdSearch } from "~/store/database/userInfo";
   import { getVideoInfo } from "~/store/database/videoSetting";
   import { userID } from "~/store/donSend/userid";
-  import { youtubeShow } from "~/store/donSend/video";
+  import { videoDonSend, youtubeShow } from "~/store/donSend/video";
 
   // 토스트기
   const toast = new Toast();
@@ -32,7 +32,9 @@
     limit: 10,
     url: "",
     urlId: "",
+    urlTitle: "",
     duration: "",
+    urlChk: false,
   };
   // 에러 송출용
   let error = {
@@ -68,6 +70,7 @@
       error.userName = "";
     }
   };
+  // 비디오 url 체커
   const donVideoUrlChk = async () => {
     const youtubeUrlTest = youtubeUrl.extractId(videoDonSet.url);
     if (!youtubeUrlTest) {
@@ -76,8 +79,10 @@
       videoDonSet.urlId = youtubeUrlTest;
       const videoRow = await youtubeShow(videoDonSet.urlId);
       if (videoRow.success) {
+        videoDonSet.urlChk = true;
         DonDefSet.preview = true;
         videoViewRow = videoRow.youtubeRow;
+        videoDonSet.urlTitle = videoViewRow.title.trim();
         let videoTime = videoRow.youtubeDuration;
         let videoMMSS = videoTime.replace("PT", "");
         let videoArr = videoMMSS.replace("S", "").split("M");
@@ -88,41 +93,47 @@
       }
     }
   };
-  // 비디오 체커
+  // 비디오 시간 체커
   const donVideoLimitChk = () => {
     let tmp_videoLimit = videoDonSet.limit;
     if (isNaN(tmp_videoLimit)) {
       error.videoEndSe = "숫자가 아닙니다.";
     } else {
-      tmp_videoLimit = Number(tmp_videoLimit.replace(/(^0+)/, ""));
       if (tmp_videoLimit > DonDefSet.limit) {
         error.videoEndSe = DonDefSet.limit + "이 최대 수 입니다.";
       } else if (tmp_videoLimit <= 0) {
         error.videoEndSe = "0보다 큰 수를 넣어주세요.";
+      } else if (Number(videoDonSet.duration) - tmp_videoLimit < 0) {
+        error.videoEndSe = "동영산 길이를 초과 합니다.";
       } else {
         error.videoEndSe = "";
       }
     }
   };
-  // 비디오 체커
+  // 비디오 시작 지점 체커
   const donVideoStartChk = () => {
+    // 시간 & 시작 지점 tmp 생성
     let tmp_videoStart = videoDonSet.start;
     let tmp_videoLimit = videoDonSet.limit;
+    // 시간 & 시작 지점 숫자 체커
     if (isNaN(tmp_videoStart)) {
       error.videoStart = "숫자가 아닙니다.";
     } else if (isNaN(tmp_videoLimit)) {
       error.videoEndSe = "숫자가 아닙니다.";
     } else {
-      tmp_videoLimit.trim();
-      tmp_videoStart.trim();
-      tmp_videoLimit = Number(tmp_videoLimit.replace(/(^0+)/, ""));
-      tmp_videoStart = Number(tmp_videoStart.replace(/(^0+)/, ""));
-      if (Number(videoDonSet.duration) - tmp_videoLimit < tmp_videoStart) {
+      // 시작 지점이 동영상 길이 보다 긴가
+      if (Number(videoDonSet.duration) < tmp_videoStart) {
         error.videoStart =
-          Number(videoDonSet.duration) -
-          tmp_videoLimit +
-          "초가 최대 수 입니다.";
-      } else if (tmp_videoStart <= 0) {
+          "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+      } else if (
+        Number(videoDonSet.duration) <
+        tmp_videoLimit + tmp_videoStart
+      ) {
+        error.videoEndSe =
+          "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+        error.videoStart =
+          "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+      } else if (tmp_videoStart < 0) {
         error.videoStart = "0보다 큰 수를 넣어주세요.";
       } else {
         error.videoStart = "";
@@ -130,7 +141,73 @@
     }
   };
 
-  const donVoiceSub = async () => {};
+  const donVideoSub = async () => {
+    // 시간 & 시작 지점 tmp 생성
+    let tmp_videoStart = videoDonSet.start;
+    let tmp_videoLimit = videoDonSet.limit;
+
+    if (videoDonSet.user_name.length == 0) {
+      error.userName = "닉네임을 설정해주세요.";
+    } else if (videoDonSet.user_name.length > 16) {
+      error.userName = "16자 까지 입력됩니다.";
+    } else if (!videoDonSet.urlChk) {
+      error.videoUrl = "정상적인 유튜브 주소가 아닙니다.";
+    } else if (isNaN(tmp_videoStart)) {
+      error.videoStart = "숫자가 아닙니다.";
+    } else if (isNaN(tmp_videoLimit)) {
+      error.videoEndSe = "숫자가 아닙니다.";
+    } else if (tmp_videoLimit > DonDefSet.limit) {
+      error.videoEndSe = DonDefSet.limit + "이 최대 수 입니다.";
+    } else if (tmp_videoLimit <= 0) {
+      error.videoEndSe = "0보다 큰 수를 넣어주세요.";
+    } else if (tmp_videoStart < 0) {
+      error.videoStart = "0보다 큰 수를 넣어주세요.";
+    } else if (Number(videoDonSet.duration) - tmp_videoLimit < 0) {
+      error.videoEndSe = "동영산 길이를 초과 합니다.";
+    } else if (Number(videoDonSet.duration) < tmp_videoStart) {
+      error.videoStart =
+        "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+    } else if (Number(videoDonSet.duration) < tmp_videoLimit + tmp_videoStart) {
+      error.videoEndSe =
+        "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+      error.videoStart =
+        "총합 " + Number(videoDonSet.duration) + "초를 초과 합니다.";
+    } else {
+      const regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+      const videoTitle = videoDonSet.urlTitle.replace(regex, "");
+
+      let videoDonData = {
+        re_user_key: reUserInfo.user_key,
+        don_user_name: videoDonSet.user_name,
+        video_type: "youtube",
+        video_url: videoDonSet.url,
+        video_limit: tmp_videoLimit,
+        video_id: videoDonSet.urlId,
+        video_title: videoTitle,
+        video_start: tmp_videoStart,
+        video_duration: videoDonSet.duration,
+      };
+
+      const videoSendChk = await videoDonSend(videoDonData);
+
+      if (videoSendChk) {
+        // 에러 초기화
+        error.userName = "";
+        error.videoUrl = "";
+        error.videoStart = "";
+        error.videoEndSe = "";
+        // 입력값 초기화
+        videoDonSet.url = "";
+        videoDonSet.limit = 10;
+        videoDonSet.start = 0;
+        videoDonSet.urlChk = false;
+        DonDefSet.preview = false;
+        toast.success("도네이션 전달 완료.");
+      } else {
+        toast.error("도네이션 전달 불가.");
+      }
+    }
+  };
 </script>
 
 <div class="don-content">
@@ -160,7 +237,7 @@
     <h3 class="input-title">비디오 길이</h3>
     <div class="input-box">
       <input
-        type="text"
+        type="number"
         bind:value={videoDonSet.limit}
         on:keyup={donVideoLimitChk}
       />
@@ -171,7 +248,7 @@
     <h3 class="input-title">비디오 시작지점</h3>
     <div class="input-box">
       <input
-        type="text"
+        type="number"
         bind:value={videoDonSet.start}
         on:keyup={donVideoStartChk}
       />
@@ -200,15 +277,7 @@
       </div>
     </div>
   {/if}
-
-  <!--<div class="don-input">
-    <h3 class="input-title">비디오 시작 지점</h3>
-    <div class="input-box">
-      <input type="text" bind:value={tmpUserName} on:keyup={donNameChk} />
-      {#if error.userName}<p>{error.userName}</p>{/if}
-    </div>
-  </div>-->
-  <div class="don-sub" on:click={donVoiceSub}>
+  <div class="don-sub" on:click={donVideoSub}>
     <span class="icon">
       <Fa icon={faPaperPlane} size="" />
     </span>

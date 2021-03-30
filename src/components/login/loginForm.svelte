@@ -4,7 +4,7 @@
   import { containerSections } from "~/store/page/login";
   import { loginSchema } from "~/store/schema/loginSchema";
   import { userLoginChk } from "~/store/auth/userLogin";
-
+  import { pageReplace } from "~/store/auth";
   // 토스트기 처리
   const toast = new Toast({ position: "bottom-left" });
 
@@ -16,19 +16,19 @@
       return { ...acc, [err.path]: err.message };
     }, {});
   };
-
   const submitHandler = async () => {
     try {
       await loginSchema.validate(fields, { abortEarly: false });
-
       const userCreateChk = await userLoginChk(fields);
       console.log(userCreateChk);
-
       if (userCreateChk == true) {
         // 로그인 확인 후 이동
         const backurl = sessionStorage.getItem("backurl");
-        let link = document.location.href.split("#");
-        location.replace(link[0] + "#" + backurl);
+        if (backurl == "/") {
+          pageReplace("");
+        } else {
+          pageReplace("#" + backurl);
+        }
       } else {
         toast.error("가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.");
       }

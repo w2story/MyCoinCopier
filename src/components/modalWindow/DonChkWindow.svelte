@@ -128,23 +128,7 @@
         width: 100%;
         height: calc(100% - 60px);
         margin-top: 60px;
-        overflow-x: hidden;
-        overflow-y: AUTO;
-
-        &::-webkit-scrollbar {
-          width: 14px;
-        }
-        &::-webkit-scrollbar-thumb {
-          background-color: #ff4081;
-          border-radius: 10px;
-          background-clip: padding-box;
-          border: 4px solid transparent;
-        }
-        &::-webkit-scrollbar-track {
-          background-color: #2a2f38;
-          border-radius: 10px;
-          box-shadow: inset 0px 0px 0px white;
-        }
+        overflow: hidden;
         .btn-group {
           width: calc(100% - 40px);
           height: auto;
