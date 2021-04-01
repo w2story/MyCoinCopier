@@ -9,6 +9,7 @@ import ChatQset from '~/components/chatSet/ChatQset.svelte'
 import UserInfo from '~/components/userInfo/userInfo.svelte'
 import DonChkWindow from '~/components/modalWindow/DonChkWindow.svelte'
 import CoinCopier from '~/components/donCopier/coincopier'
+import DonDefView from '~/components/donViews/donDefView'
 import Login from '~/components/login/Login.svelte'
 
 export default {
@@ -23,5 +24,6 @@ export default {
   '/login': Login,
   '/donChk': DonChkWindow,
   '/coincopier/:userid': CoinCopier,
+  '/donVIew/def/:uuid': DonDefView,
   '*': NotFound
 }

@@ -6,12 +6,16 @@
   import Toast from "svelte-toast";
   // 폰트어섬
   import Fa from "svelte-fa";
-  import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faPaperPlane,
+    faFemale,
+    faMale,
+  } from "@fortawesome/free-solid-svg-icons";
 
   // 스토어
   import { imgUpload, donImageLoad } from "~/store/database/imgSetting";
-  import { userIdSearch } from "~/store/database/userInfo";
-  import { getVoiceInfo } from "~/store/database/voiceSetting";
+  import { getUserInfo, userIdSearch } from "~/store/database/userInfo";
+  import { getDonVoiceInfo } from "~/store/database/voiceSetting";
   import { voiceDonSend } from "~/store/donSend/voice";
   import { userID } from "~/store/donSend/userid";
   import { bind } from "svelte/internal";
@@ -28,6 +32,7 @@
   let limitLen = 0;
   let limitText = false;
   let lenText = 0;
+  let donVoiceSelected = "ko-KR-Standard-B";
   let error = {
     textarea: "",
     userName: "",
@@ -35,14 +40,22 @@
   };
 
   onMount(async () => {
+    console.log($userID);
+
     const reUser = await userIdSearch($userID);
     if (reUser.success) {
       reUserInfo = reUser.userRow;
-      donImg = await donImageLoad(reUserInfo.user_key);
-      tmpUserName = reUserInfo.user_name;
+      const reUserKey = reUserInfo.user_key;
+      console.log(reUserKey);
+
+      const voiceSetting = await getDonVoiceInfo(reUserKey);
+      donImg = await donImageLoad(reUserKey);
+
+      const myInfo = await getUserInfo();
+
+      tmpUserName = myInfo.user_name;
       imgSelect = donImg[0].img_url;
       console.log(imgSelect);
-      const voiceSetting = await getVoiceInfo(reUserInfo.user_key);
       console.log(voiceSetting);
 
       limitLen = Number(voiceSetting.tts_text_size);
@@ -76,6 +89,16 @@
     }
   };
 
+  // 알람 레이아웃 처리
+  const donVoiceChange = async (event) => {
+    noticeLayoutSelected = event.currentTarget.value;
+    voiceSet.allim_layout = noticeLayoutSelected;
+    const voiceData = {
+      allim_layout: noticeLayoutSelected,
+      user_key: voiceSet.user_key,
+    };
+  };
+
   const donVoiceSub = async () => {
     const donTextChk = donText.trim();
     const donImageSelect = imgSelect.trim();
@@ -97,6 +120,7 @@
         don_img_url: donImageSelect,
         don_text: donTextChk,
         don_user_name: userName,
+        don_tts_sound: donVoiceSelected,
       };
       const DonSendChk = await voiceDonSend(donSend);
       if (DonSendChk) {
@@ -149,9 +173,81 @@
       {/each}
     </div>
   </div>
+  <div class="thumbnail-group">
+    <h3 class="thumbnail-title">TTS 음성 선택</h3>
+    <div class="thumbnail-btn">
+      <label class="thumbnail">
+        <input
+          type="radio"
+          name="layoutSelect"
+          bind:group={donVoiceSelected}
+          on:change={donVoiceChange}
+          value="ko-KR-Standard-A"
+        />
+        <span class="radio-box">
+          <span class="icon">
+            <Fa icon={faFemale} size="3x" />
+          </span>
+          <h3>한국 여성 1</h3>
+        </span>
+      </label>
+      <label class="thumbnail">
+        <input
+          type="radio"
+          name="layoutSelect"
+          bind:group={donVoiceSelected}
+          on:change={donVoiceChange}
+          value="ko-KR-Standard-B"
+        />
+        <span class="radio-box">
+          <span class="icon">
+            <Fa icon={faFemale} size="3x" />
+          </span>
+          <h3>한국 여성 2</h3>
+        </span>
+      </label>
+      <label class="thumbnail">
+        <input
+          type="radio"
+          name="layoutSelect"
+          bind:group={donVoiceSelected}
+          on:change={donVoiceChange}
+          value="ko-KR-Standard-C"
+        />
+        <span class="radio-box">
+          <span class="icon">
+            <Fa icon={faMale} size="3x" />
+          </span>
+          <h3>한국 남자 1</h3>
+        </span>
+      </label>
+      <label class="thumbnail">
+        <input
+          type="radio"
+          name="layoutSelect"
+          bind:group={donVoiceSelected}
+          on:change={donVoiceChange}
+          value="ko-KR-Standard-D"
+        />
+        <span class="radio-box">
+          <span class="icon">
+            <Fa icon={faMale} size="3x" />
+          </span>
+          <h3>한국 남자 2</h3>
+        </span>
+      </label>
+    </div>
+  </div>
+  <!--<div class="test">
+    <audio
+      src="http://localhost:3000/audio/mcc_1_1_a25bcbc8f56dee1e50761cec1bf62e29.mp3"
+      width="400"
+      controls
+    />
+  </div>-->
   <div class="don-sub" on:click={donVoiceSub}>
     <span class="icon">
-      <Fa icon={faPaperPlane} size="" />
+      <Fa icon={faPaperPlane} />
     </span>
     <h3>후원 하기</h3>
   </div>
@@ -167,7 +263,7 @@
       height: auto;
       display: flex;
       flex-flow: column;
-      padding-bottom: 20px;
+      padding-bottom: 10px;
       // 현재 처리기
       .input-box {
         width: calc(100% - 20px);
@@ -185,22 +281,16 @@
           padding: 10px;
           font-size: 18px;
         }
-        p {
-          color: #ff4081 !important;
-          font-size: 12px !important;
-          padding-bottom: 5px;
-          position: absolute;
-          bottom: -15px;
-          left: 10px;
-        }
       }
       .input-title {
         width: 200px;
         height: 30px;
         color: #fff;
-        font-size: 18px;
+        font-size: 20px;
+        font-weight: bolder;
         line-height: 20px;
-        padding: 10px;
+        padding: 5px 10px;
+        padding-bottom: 0px;
       }
     }
     // tts 도네
@@ -212,7 +302,7 @@
         height: 100px;
         padding: 15px;
         padding-bottom: 25px;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         font-size: 16px;
         line-height: 1.5;
         border-radius: 5px;
@@ -230,7 +320,7 @@
         width: auto;
         height: auto;
         position: absolute;
-        bottom: 35px;
+        bottom: 30px;
         right: 15px;
         p {
           font-size: 16px;
@@ -243,7 +333,7 @@
         width: auto;
         height: auto;
         position: absolute;
-        bottom: 5px;
+        bottom: 30px;
         left: 15px;
         color: #ff4081;
       }
@@ -251,8 +341,7 @@
     .don-img-select {
       width: 100%;
       height: 220px;
-      margin-top: 15px;
-      margin-bottom: 45px;
+      margin-bottom: 25px;
       h3 {
         width: calc(100% - 15px);
         padding-left: 15px;
@@ -338,6 +427,92 @@
           img {
             height: 100%;
             object-fit: contain;
+          }
+        }
+      }
+    }
+    // 썸네일형(기타)
+    .thumbnail-group {
+      width: 100%;
+      padding-bottom: 10px;
+      .thumbnail-title {
+        width: calc(100% - 15px);
+        padding-left: 15px;
+        padding-bottom: 5px;
+        font-size: 20px;
+        font-weight: bolder;
+        text-align: left;
+      }
+      .thumbnail-btn {
+        width: calc(100% - 30px);
+        padding: 0px 15px;
+        padding-top: 5px;
+        position: relative;
+        display: flex;
+
+        .thumbnail {
+          width: 158px;
+          height: 90px;
+          display: inline-block;
+          padding: 0%;
+          margin: 0%;
+          margin-right: 15px;
+
+          input {
+            opacity: 0;
+            width: 0%;
+            height: 0%;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+
+          .radio-box {
+            width: 150px;
+            height: 90px;
+            position: relative;
+            display: inline-block;
+
+            background-color: #1c2027;
+            border-radius: 10px;
+
+            text-align: center;
+
+            .icon {
+              width: 50px;
+              height: 50px;
+              display: block;
+              padding: 0px 50px;
+              padding-top: 10px;
+            }
+            h3 {
+              font-size: 16px;
+            }
+
+            &.nLayout-center {
+              .icon {
+                opacity: 0.1;
+                padding-top: 15px;
+              }
+              h3 {
+                position: absolute;
+                top: 26px;
+                left: 60px;
+              }
+            }
+            &.nLayout-noimg {
+              h3 {
+                position: absolute;
+                top: 26px;
+                left: 60px;
+              }
+            }
+          }
+          input:checked + .radio-box {
+            background-color: #ff4081;
+          }
+          input:focus + .radio-box {
+            box-shadow: 0 0 1px #ff4081;
           }
         }
       }

@@ -16,7 +16,18 @@ export async function getVideoInfo() {
     })
   return videoArr.videoSet;
 }
-
+export async function getDonVideoInfo(key) {
+  let videoArr = {};
+  await axios
+    .get(url + "/videoset/" + key, {})
+    .then((res) => {
+      videoArr = res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  return videoArr.videoSet;
+}
 export async function setVideoToggle(data) {
   let ToggleUpateData = {
     video_use: data.video_use,

@@ -13,8 +13,6 @@
     lastVideoDonKey,
     videoListUpdata,
   } from "~/store/database/videoDonList";
-  // 스토어
-  import { donNewChk } from "~/store/page/donlist";
 
   // 후원 최종키
   let voiceLastKey = 0;

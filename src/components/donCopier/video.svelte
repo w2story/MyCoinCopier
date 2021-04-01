@@ -9,8 +9,8 @@
   import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
   // 스토어
-  import { userIdSearch } from "~/store/database/userInfo";
-  import { getVideoInfo } from "~/store/database/videoSetting";
+  import { getUserInfo, userIdSearch } from "~/store/database/userInfo";
+  import { getDonVideoInfo } from "~/store/database/videoSetting";
   import { userID } from "~/store/donSend/userid";
   import { videoDonSend, youtubeShow } from "~/store/donSend/video";
 
@@ -50,8 +50,9 @@
     const reUser = await userIdSearch($userID);
     if (reUser.success) {
       reUserInfo = reUser.userRow;
-      videoDonSet.user_name = reUserInfo.user_name;
-      const videoSetting = await getVideoInfo(reUserInfo.user_key);
+      const myInfo = await getUserInfo();
+      videoDonSet.user_name = myInfo.user_name;
+      const videoSetting = await getDonVideoInfo(reUserInfo.user_key);
       DonDefSet.limit = Number(videoSetting.video_limit);
     } else {
     }

@@ -15,7 +15,9 @@
   console.log($location.indexOf("login"));
   console.log($location.indexOf("coincopier"));
 
-  if (!userToken && $location != "/login") {
+  if ($location.indexOf("donVIew") == 1) {
+    console.log("donView service");
+  } else if (!userToken && $location != "/login") {
     console.log("not login");
     pageReplace("#/login");
     sessionStorage.setItem("backurl", $location);
@@ -35,7 +37,7 @@
   }
 </script>
 
-{#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1 && $location.indexOf("coincopier") == -1}
+{#if $location.indexOf("donChk") == -1 && $location.indexOf("login") == -1 && $location.indexOf("coincopier") == -1 && $location.indexOf("donVIew") == -1}
   <main>
     <Header />
     <Menu />

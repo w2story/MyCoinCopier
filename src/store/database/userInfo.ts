@@ -114,3 +114,15 @@ export async function userIdSearch(userid: string) {
     });
   return arr;
 }
+
+export async function uuidSearch(userid: string) {
+  let arr;
+  await axios
+    .get(url + "/userinfo/search/uuid/" + userid)
+    .then((res) => {
+      arr = res.data;
+    }).catch((Error) => {
+      console.log(Error);
+    });
+  return arr;
+}

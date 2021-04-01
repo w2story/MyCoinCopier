@@ -16,6 +16,18 @@ export async function getVoiceInfo() {
     })
   return voiceArr.voiceSet;
 }
+export async function getDonVoiceInfo(userKey) {
+  let voiceArr = {};
+  await axios
+    .get(url + "/voiceset/" + userKey, {})
+    .then((res) => {
+      voiceArr = res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  return voiceArr.voiceSet;
+}
 export async function setVoiceToggle(data) {
   let ToggleUpateData = {
     voice_use: data.voice_use,
