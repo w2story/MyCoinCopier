@@ -6,7 +6,7 @@
   import Fa from "svelte-fa";
   import {
     faCommentAlt,
-    faMicrophone,
+    faMusic,
     faVideo,
   } from "@fortawesome/free-solid-svg-icons";
   import Header from "~/components/header/header.svelte";
@@ -17,6 +17,7 @@
   // 컴포넌트 처리
   import voiceComponent from "./voice.svelte";
   import videoComponent from "./video.svelte";
+  import osumapComponent from "./osumap.svelte";
 
   // 배경 처리
   let images = "images/20.png";
@@ -55,9 +56,9 @@
     {
       id: 3,
       title: "OSU",
-      icon: faMicrophone,
+      icon: faMusic,
       selected: false,
-      component: voiceComponent,
+      component: osumapComponent,
     },
   ];
 
@@ -163,7 +164,7 @@
     background-position: 50%;
 
     &:before {
-      position: absolute;
+      position: fixed;
       left: 0;
       top: 0;
       height: 100%;

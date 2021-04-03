@@ -84,7 +84,7 @@
       height: 300px;
       overflow: hidden;
       margin-bottom: 25px;
-      margin-top: 150px;
+      margin-top: 100px;
       img {
         width: 100%;
         height: 100%;
@@ -93,7 +93,7 @@
     }
     .don-text {
       width: 1200px;
-      height: 200px;
+      height: 250px;
       padding: 0px 40px;
       padding-bottom: 25px;
       text-align: center;
@@ -108,6 +108,7 @@
       }
       p.text {
         font-size: 72px;
+        font-weight: bolder;
         color: #fff;
         text-shadow: 0 1px 3px rgb(0 0 0 / 75%);
       }

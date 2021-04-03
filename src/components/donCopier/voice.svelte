@@ -31,7 +31,8 @@
   let donText = "";
   let limitLen = 0;
   let limitText = false;
-  let lenText = 0;
+  let lenText_name = 0;
+  let lenText_area = 0;
   let donVoiceSelected = "ko-KR-Standard-B";
   let error = {
     textarea: "",
@@ -66,22 +67,22 @@
 
   const donNameChk = (e) => {
     let str = e.target.value;
-    lenText = 0;
+    lenText_name = 0;
     for (var i = 0; i < str.length; i++) {
-      lenText++;
+      lenText_name++;
     }
-    if (16 < lenText) {
+    if (16 < lenText_name) {
       error.userName = "16자 까지 입력됩니다.";
     } else {
     }
   };
   const donTextChk = (e) => {
     let str = e.target.value;
-    lenText = 0;
+    lenText_area = 0;
     for (var i = 0; i < str.length; i++) {
-      lenText++;
+      lenText_area++;
     }
-    if (limitLen < lenText) {
+    if (limitLen < lenText_area) {
       limitText = true;
       error.textarea = "후원 텍스트 길이가 초과 했습니다.";
     } else {
@@ -110,8 +111,8 @@
       error.userName = "16자 까지 입력됩니다.";
     } else if (donTextChk.length == 0) {
       error.textarea = "후원 텍스트를 넣어주세요.";
-    } else if (donTextChk.length > lenText) {
-      error.textarea = lenText + "자 까지 입력됩니다.";
+    } else if (donTextChk.length > limitLen) {
+      error.textarea = limitLen + "자 까지 입력됩니다.";
     } else if (!isImageUrl(donImageSelect)) {
       error.imgselected = "주소값이 불분명 합니다.";
     } else {
@@ -157,7 +158,7 @@
       </p>
     {/if}
     <div class="limitLen" class:limit={limitText}>
-      <p>{lenText}/{limitLen}</p>
+      <p>{lenText_area}/{limitLen}</p>
     </div>
   </div>
   <div class="don-img-select">

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import InlineSVG from "svelte-inline-svg";
 
   import Fa from "svelte-fa";
@@ -8,309 +9,116 @@
     faDownload,
   } from "@fortawesome/free-solid-svg-icons";
 
+  // 스토어 처리
+  import {
+    osuListSearch,
+    osuLastKeySearch,
+    lastOsuDonKey,
+    osuListUpdate,
+    osuList,
+  } from "~/store/database/osuDonList";
+
   //osu 아이콘 src
   const osuSrc = "../svg/osu.svg";
   const taikoSrc = "../svg/taiko.svg";
   const catchSrc = "../svg/catch.svg";
   const maniaSrc = "../svg/mania.svg";
+
+  let osuLastKey = 0;
+
+  onMount(() => {
+    const repeatDonNewChk = setInterval(() => {
+      donNewChk($lastOsuDonKey);
+    }, 700);
+  });
+
+  // 무제한 뷔페
+  export const donNewChk = async (osuLastKey) => {
+    console.log("체커 작동");
+
+    const osuData = { lastKey: osuLastKey };
+    const osuLastKeyChange = await osuLastKeySearch(osuData);
+    if (osuLastKeyChange) {
+      console.log("새로 생성된 음성 도네 확인");
+      osuListUpdate.set(1);
+    }
+  };
+
+  osuListSearch().then((res) => {
+    osuList.set(res.osuMapRow);
+    osuLastKey = $lastOsuDonKey;
+    console.log(osuLastKey);
+    console.log($osuList[0].osu_data);
+  });
+
+  $: if ($osuListUpdate > 0) {
+    console.log($osuListUpdate);
+    osuListUpdate.set(0);
+
+    osuListSearch().then((res) => {
+      osuList.set(res.osuMapRow);
+      osuLastKey = $lastOsuDonKey;
+      console.log(osuLastKey);
+
+      console.log($osuList[0].ous_data);
+    });
+  }
+
+  let osuMapList = [];
 </script>
 
 <div class="content">
   <div class="osu-map-list">
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/1008155/covers/cover.jpg?1615061029"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">Soundscape</h3>
-          <p class="song-singer">TRUE</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>3,852</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
+    {#each $osuList as item}
+      <div class="osu-map-item">
+        <div class="map-panel">
+          <img
+            src="https://assets.ppy.sh/beatmaps/{item.osu_data
+              .SetId}/covers/cover.jpg"
+            class="map-img"
+          />
+          <div class="map-overlay" />
+          <div class="map-status">
+            <h3>
+              {#if item.osu_data.RankedStatus > 0}RANKED{:else}무덤에 감{/if}
+            </h3>
+          </div>
+          <div class="map-title">
+            <h3 class="song-title">{item.osu_data.Title}</h3>
+            <p class="song-singer">{item.osu_data.Artist}</p>
+          </div>
+          <div class="map-counts">
+            <div class="paly-count">
+              <p>{item.osu_data.Playcount.toLocaleString("ko-KR")}</p>
+              <span class="icon">
+                <Fa icon={faPlayCircle} size="sm" />
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={osuSrc} />
+        <div class="map-content">
+          <div class="progress" id="progress-{item.osu_data.SetId}" />
+          <div class="map-diff">
+            {#each item.osu_data.ChildrenBeatmaps as childernItem}
+              <div class="osu-diff osu-diff-{childernItem.DiffNewName}">
+                {#if childernItem.Mode == 0}
+                  <InlineSVG src={osuSrc} />
+                {:else if childernItem.Mode == 1}
+                  <InlineSVG src={taikoSrc} />
+                {:else if childernItem.Mode == 2}
+                  <InlineSVG src={catchSrc} />
+                {:else if childernItem.Mode == 3}
+                  <InlineSVG src={maniaSrc} />
+                {/if}
+              </div>
+            {/each}
           </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={osuSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/1248952/covers/cover.jpg"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">KING</h3>
-          <p class="song-singer">Kizuna AI</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>3,852</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
+          <div class="map-dw-btn" on:click={selectOsuMap(item.osu_data)}>
+            <Fa icon={faDownload} size="2x" />
           </div>
         </div>
       </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={osuSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={osuSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/444632/covers/cover.jpg?1521108292"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">STYX HELIX</h3>
-          <p class="song-singer">MYTH & ROID</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>9,152,969</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={taikoSrc} />
-          </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={taikoSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={taikoSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={taikoSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={taikoSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={taikoSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/241526/covers/cover.jpg?1521086997"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">Kokou no Sousei</h3>
-          <p class="song-singer">Yousei Teikoku</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>28,098,791</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={catchSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/313718/covers/cover.jpg?1521095162"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">Marble Soda</h3>
-          <p class="song-singer">Shawn Wasabi</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>28,098,791</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={maniaSrc} />
-          </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={maniaSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={maniaSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={maniaSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={maniaSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={maniaSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
-    <div class="osu-map-item">
-      <div class="map-panel">
-        <img
-          src="https://assets.ppy.sh/beatmaps/241526/covers/cover.jpg?1521086997"
-          class="map-img"
-        />
-        <div class="map-overlay" />
-        <div class="map-status">
-          <h3>Ranked</h3>
-        </div>
-        <div class="map-title">
-          <h3 class="song-title">Kokou no Sousei</h3>
-          <p class="song-singer">Yousei Teikoku</p>
-        </div>
-        <div class="map-counts">
-          <div class="paly-count">
-            <p>28,098,791</p>
-            <span class="icon">
-              <Fa icon={faPlayCircle} size="sm" />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="map-content">
-        <div class="map-diff">
-          <div class="osu-diff osu-diff-easy">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-normal">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-hard">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-insane">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-extreme">
-            <InlineSVG src={catchSrc} />
-          </div>
-          <div class="osu-diff osu-diff-ultra">
-            <InlineSVG src={catchSrc} />
-          </div>
-        </div>
-        <div class="map-dw-btn">
-          <Fa icon={faDownload} size="2x" />
-        </div>
-      </div>
-    </div>
+    {/each}
   </div>
 </div>
 
