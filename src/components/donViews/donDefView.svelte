@@ -12,6 +12,7 @@
     donViewKey,
   } from "~/store/page/donView";
   import Video from "./video.svelte";
+  import Voice from "./voice.svelte";
 
   // 사용자 uuid 확인
   const webLocation = $location;
@@ -71,13 +72,11 @@
         console.log("3. 루프돈다,", limitTime);
         console.log("3. 메인 페이지 업데이트 수 :", updateNum);
         donViewRow = await donViewListChk($userUUID);
-        console.log("3. 비디오 키값 확인 :", $donViewKey);
+        console.log("3. 리스트 키값 확인 :", $donViewKey);
         console.log("3. 선택기:", $donViewSelect);
         loopNum += 1;
-        console.time("시간 지연 체크");
         await wait(limitTime);
         // 시간 지연 후 처리
-        console.timeEnd("시간 지연 체크");
         console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         updateNum = 1;
         if (donViewRow.success) {
@@ -85,7 +84,7 @@
         } else {
           loopStartNum += 1;
         }
-        console.log("3. 비디오 키값 확인 :", $donViewKey);
+        console.log("3. 리트스 키값 확인 :", $donViewKey);
         console.log("3. 리셋 업데이트 확인 :", donViewReset);
         await donPrintUpdate($userUUID, $donViewKey);
         await tick();
@@ -104,7 +103,7 @@
         console.log("1. 루프돈다,", limitTime);
         console.log("1. 메인 페이지 업데이트 수 :", updateNum);
         donViewRow = await donViewListChk($userUUID);
-        console.log("1. 비디오 키값 확인 :", $donViewKey);
+        console.log("1. 리스트 키값 확인 :", $donViewKey);
         console.log("1. 선택기:", $donViewSelect);
         loopNum += 1;
         await wait(limitTime);
@@ -182,7 +181,9 @@
 <div class="components">
   {#if $donViewSelect == "video"}
     <Video mainUpadeNum={updateNum} {limitTimeDiscord} />
-  {:else if $donViewSelect == "voice"}{/if}
+  {:else if $donViewSelect == "voice"}
+    <Voice mainUpadeNum={updateNum} {limitTimeDiscord} />
+  {/if}
 </div>
 
 <style lang="scss">
