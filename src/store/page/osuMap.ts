@@ -36,7 +36,13 @@ export const osuMapSearch = async (data) => {
           map.DiffNewName = "ultra";
         }
       });
+      item.ChildrenBeatmaps.sort(function (a, b) {
+        return a.DifficultyRating < b.DifficultyRating ? -1 : a.DifficultyRating > b.DifficultyRating ? 1 : 0;
+      });
       item.Playcount = PalyCount;
+    });
+    res.data.data.sort(function (a, b) {
+      return a.Playcount < b.Playcount ? 1 : a.Playcount > b.Playcount ? -1 : 0;
     });
     osuMapList.data = res.data.data;
   }).catch((err) => {

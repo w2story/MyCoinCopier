@@ -24,7 +24,7 @@ export async function osuListSearch() {
       donListRow.osuMapRow.forEach(item => {
         let PalyCount = 0;
         item.osu_data = JSON.parse(item.osu_data);
-        console.log(item.osu_data.ChildrenBeatmaps);
+        //console.log(item.osu_data.ChildrenBeatmaps);
         item.osu_data.ChildrenBeatmaps.forEach(map => {
           PalyCount += map.Playcount;
           if (map.DifficultyRating < 2) {
@@ -42,9 +42,9 @@ export async function osuListSearch() {
           }
         });
         item.osu_data.Playcount = PalyCount;
-        console.log(item.osu_data);
+        //console.log(item.osu_data);
       });
-      lastOsuDonKey.set(donListRow.osuMapRow[0].osumap_don_key);
+      lastOsuDonKey.set(donListRow.osuMapRow[donListRow.osuMapRow.length - 1].osumap_don_key);
     }).catch((Error) => {
       console.log(Error);
       donListRow.success = false;

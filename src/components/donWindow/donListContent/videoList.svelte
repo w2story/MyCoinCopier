@@ -6,6 +6,7 @@
     videoListSearch,
     lastVideoDonKey,
     videoListUpdata,
+    videoRePlay,
   } from "~/store/database/videoDonList";
 
   let videoLastKey = 0;
@@ -28,6 +29,12 @@
       console.log(voiceLastKey);
     });
   }
+  const videoDonReplay = async (key) => {
+    const rePlayChk = await videoRePlay(key);
+    if (rePlayChk) {
+      toast.success("재송출 완료.");
+    }
+  };
 </script>
 
 <div class="don-component">
@@ -36,7 +43,7 @@
   </div>
   <div class="don-list don-video">
     {#each $videoList as item}
-      <div class="don-item">
+      <div class="don-item" class:see={item.active}>
         <div class="don-img">
           <img
             src={"https://i.ytimg.com/vi/" + item.video_id + "/sddefault.jpg"}
@@ -59,7 +66,11 @@
               <Fa icon={faLink} />
             </span>
           </a>
-          <a href="#" class="btn-def reply-btn">
+          <a
+            href="#"
+            class="btn-def reply-btn"
+            on:click={videoDonReplay(item.video_don_key)}
+          >
             <span class="icon">
               <Fa icon={faReply} />
             </span>
@@ -77,4 +88,11 @@
 
 <style lang="scss">
   @import "../../../scss/donListBox.scss";
+  .don-list {
+    .don-item {
+      &.see {
+        opacity: 0.5;
+      }
+    }
+  }
 </style>

@@ -18,7 +18,6 @@
   import { getUserInfo, userIdSearch } from "~/store/database/userInfo";
   import { osuMapSearch, osuMapSend } from "~/store/page/osuMap";
   import { userID } from "~/store/donSend/userid";
-  import { children } from "svelte/internal";
 
   //osu 아이콘 src
   const osuSrc = "../svg/osu.svg";
@@ -100,6 +99,7 @@
       const sendOsu = osuMapSend(DonData);
       if (sendOsu) {
         error.osuMap = "";
+        toast.success("도네이션 전달 완료.");
       } else {
         error.osuMap = "오류로 인해 처리 되지 않았습니다.";
       }
@@ -306,10 +306,29 @@
     }
     .osu-map-list {
       width: 100%;
+      max-height: 1000px;
+      overflow-x: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       justify-content: space-around;
+
+      &::-webkit-scrollbar {
+        width: 14px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #ff4081;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border: 4px solid transparent;
+      }
+      &::-webkit-scrollbar-track {
+        background-color: #3a3f47;
+        border-radius: 10px;
+        box-shadow: inset 0px 0px 0px white;
+      }
 
       .osu-map-item {
         width: calc(50% - 15px);
@@ -453,13 +472,17 @@
             }
           }
           .map-diff {
-            position: absolute;
+            width: 70%;
+            height: 25px;
+            margin: 15px 10px;
             overflow: hidden;
-            bottom: 15px;
-            left: 10px;
+
             display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             align-items: center;
             font-size: 12px;
+
             .osu-diff {
               width: 25px;
               height: 25px;

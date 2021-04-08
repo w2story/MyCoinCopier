@@ -6,25 +6,38 @@
     voiceListSearch,
     lastVoiceDonKey,
     voiceListUpdata,
+    voiceRePlay,
   } from "~/store/database/voiceDonList";
   import {
     videoList,
     videoListSearch,
     lastVideoDonKey,
     videoListUpdata,
+    videoRePlay,
   } from "~/store/database/videoDonList";
+  // 토스트기
+  import Toast from "svelte-toast";
 
   // 후원 최종키
   let voiceLastKey = 0;
   let videoLastKey = 0;
 
+  // 후원 리스트 처리
+  let voiceListRow = [];
+  let videoListRow = [];
+
+  // 토스트기
+  const toast = new Toast();
+
   voiceListSearch().then((res) => {
     voiceList.set(res.voicerow);
+    voiceListRow = res.voicerow;
     voiceLastKey = $lastVoiceDonKey;
     console.log(voiceLastKey);
   });
   videoListSearch().then((res) => {
     videoList.set(res.videorow);
+    videoListRow = res.videorow;
     videoLastKey = $lastVideoDonKey;
     console.log(videoLastKey);
   });
@@ -35,6 +48,7 @@
 
     voiceListSearch().then((res) => {
       voiceList.set(res.voicerow);
+      voiceListRow = res.voicerow;
       voiceLastKey = $lastVoiceDonKey;
       console.log(voiceLastKey);
     });
@@ -45,10 +59,24 @@
 
     videoListSearch().then((res) => {
       videoList.set(res.videorow);
+      videoListRow = res.videorow;
       voiceLastKey = $lastVideoDonKey;
       console.log(voiceLastKey);
     });
   }
+
+  const voiceDonReplay = async (key) => {
+    const rePlayChk = await voiceRePlay(key);
+    if (rePlayChk) {
+      toast.success("재송출 완료.");
+    }
+  };
+  const videoDonReplay = async (key) => {
+    const rePlayChk = await videoRePlay(key);
+    if (rePlayChk) {
+      toast.success("재송출 완료.");
+    }
+  };
 </script>
 
 <div class="don-component">
@@ -56,8 +84,8 @@
     <h3>음성도네이션</h3>
   </div>
   <div class="don-list don-text">
-    {#each $voiceList as item}
-      <div class="don-item">
+    {#each voiceListRow as item}
+      <div class="don-item" class:see={item.active}>
         <div class="don-img">
           <img src={item.don_img_url} />
         </div>
@@ -68,16 +96,19 @@
           <p class="don-text">{item.don_text}</p>
         </div>
         <div class="don-btn">
-          <a href="#" class="btn-def reply-btn">
+          <div
+            class="btn-def reply-btn"
+            on:click={voiceDonReplay(item.voice_don_key)}
+          >
             <span class="icon">
               <Fa icon={faReply} />
             </span>
-          </a>
-          <a href="#" class="btn-def reply-btn">
+          </div>
+          <div class="btn-def reply-btn">
             <span class="icon">
               <Fa icon={faDeaf} />
             </span>
-          </a>
+          </div>
         </div>
       </div>
     {/each}
@@ -86,8 +117,8 @@
     <h3>영상도네이션</h3>
   </div>
   <div class="don-list don-video">
-    {#each $videoList as item}
-      <div class="don-item">
+    {#each videoListRow as item}
+      <div class="don-item" class:see={item.active}>
         <div class="don-img">
           <img
             src={"https://i.ytimg.com/vi/" + item.video_id + "/sddefault.jpg"}
@@ -110,16 +141,19 @@
               <Fa icon={faLink} />
             </span>
           </a>
-          <a href="#" class="btn-def reply-btn">
+          <div
+            class="btn-def reply-btn"
+            on:click={videoDonReplay(item.video_don_key)}
+          >
             <span class="icon">
               <Fa icon={faReply} />
             </span>
-          </a>
-          <a href="#" class="btn-def deaf-btn">
+          </div>
+          <div class="btn-def reply-btn">
             <span class="icon">
               <Fa icon={faDeaf} />
             </span>
-          </a>
+          </div>
         </div>
       </div>
     {/each}
@@ -130,5 +164,10 @@
   @import "../../../scss/donListBox.scss";
   .don-list {
     height: calc(50% - 76px);
+    .don-item {
+      &.see {
+        opacity: 0.5;
+      }
+    }
   }
 </style>

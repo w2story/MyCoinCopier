@@ -6,6 +6,7 @@
     voiceListUpdata,
     lastVoiceDonKey,
     voiceList,
+    voiceRePlay,
   } from "~/store/database/voiceDonList";
 
   let voiceLastKey = 0;
@@ -26,6 +27,12 @@
       console.log(voiceLastKey);
     });
   }
+  const voiceDonReplay = async (key) => {
+    const rePlayChk = await voiceRePlay(key);
+    if (rePlayChk) {
+      toast.success("재송출 완료.");
+    }
+  };
 </script>
 
 <div class="don-component">
@@ -34,7 +41,7 @@
   </div>
   <div class="don-list don-text">
     {#each $voiceList as item}
-      <div class="don-item">
+      <div class="don-item" class:see={item.active}>
         <div class="don-img">
           <img src={item.don_img_url} />
         </div>
@@ -45,16 +52,19 @@
           <p class="don-text">{item.don_text}</p>
         </div>
         <div class="don-btn">
-          <a href="#" class="btn-def reply-btn">
+          <div
+            class="btn-def reply-btn"
+            on:click={voiceDonReplay(item.voice_don_key)}
+          >
             <span class="icon">
               <Fa icon={faReply} />
             </span>
-          </a>
-          <a href="#" class="btn-def reply-btn">
+          </div>
+          <div class="btn-def reply-btn">
             <span class="icon">
               <Fa icon={faDeaf} />
             </span>
-          </a>
+          </div>
         </div>
       </div>
     {/each}
@@ -63,4 +73,11 @@
 
 <style lang="scss">
   @import "../../../scss/donListBox.scss";
+  .don-list {
+    .don-item {
+      &.see {
+        opacity: 0.5;
+      }
+    }
+  }
 </style>

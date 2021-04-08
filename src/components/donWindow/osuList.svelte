@@ -25,6 +25,7 @@
   const maniaSrc = "../svg/mania.svg";
 
   let osuLastKey = 0;
+  let osuMapListRow = [];
 
   onMount(() => {
     const repeatDonNewChk = setInterval(() => {
@@ -37,6 +38,7 @@
     console.log("체커 작동");
 
     const osuData = { lastKey: osuLastKey };
+
     const osuLastKeyChange = await osuLastKeySearch(osuData);
     if (osuLastKeyChange) {
       console.log("새로 생성된 음성 도네 확인");
@@ -47,29 +49,34 @@
   osuListSearch().then((res) => {
     osuList.set(res.osuMapRow);
     osuLastKey = $lastOsuDonKey;
-    console.log(osuLastKey);
+    osuMapListRow = $osuList;
+    //console.log(osuLastKey);
     console.log($osuList[0].osu_data);
   });
 
   $: if ($osuListUpdate > 0) {
+    console.log("업데이트 체커 작동");
     console.log($osuListUpdate);
     osuListUpdate.set(0);
-
     osuListSearch().then((res) => {
       osuList.set(res.osuMapRow);
       osuLastKey = $lastOsuDonKey;
-      console.log(osuLastKey);
-
+      osuMapListRow = $osuList;
+      //console.log(osuLastKey);
       console.log($osuList[0].ous_data);
     });
   }
 
   let osuMapList = [];
+
+  const selectOsuMap = async (data) => {
+    await console.log(data);
+  };
 </script>
 
 <div class="content">
   <div class="osu-map-list">
-    {#each $osuList as item}
+    {#each osuMapListRow as item}
       <div class="osu-map-item">
         <div class="map-panel">
           <img
@@ -97,7 +104,6 @@
           </div>
         </div>
         <div class="map-content">
-          <div class="progress" id="progress-{item.osu_data.SetId}" />
           <div class="map-diff">
             {#each item.osu_data.ChildrenBeatmaps as childernItem}
               <div class="osu-diff osu-diff-{childernItem.DiffNewName}">
@@ -113,9 +119,13 @@
               </div>
             {/each}
           </div>
-          <div class="map-dw-btn" on:click={selectOsuMap(item.osu_data)}>
+          <a
+            class="map-dw-btn"
+            on:click={selectOsuMap(item.osu_data)}
+            href="https://api.chimu.moe/v1/download/{item.osu_data.SetId}?n=1"
+          >
             <Fa icon={faDownload} size="2x" />
-          </div>
+          </a>
         </div>
       </div>
     {/each}
@@ -261,6 +271,7 @@
         width: 100%;
         height: 60px;
         background-color: #202225;
+        position: relative;
         .map-dw-btn {
           position: absolute;
           bottom: 20px;
@@ -271,11 +282,19 @@
         }
         .map-diff {
           position: absolute;
-          bottom: 15px;
-          left: 10px;
+          top: 0%;
+          left: 0%;
+          width: 70%;
+          height: 25px;
+          margin: 15px 10px;
+          overflow: hidden;
+
           display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
           align-items: center;
           font-size: 12px;
+
           .osu-diff {
             width: 25px;
             height: 25px;

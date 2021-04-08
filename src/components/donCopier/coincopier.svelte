@@ -172,6 +172,24 @@
       content: "";
       background-color: rgba($color: #2a2f38, $alpha: 0.6);
     }
+    &::-webkit-scrollbar {
+      width: 14px;
+      z-index: 1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #ff4081;
+      border-radius: 10px;
+      background-clip: padding-box;
+      border: 4px solid transparent;
+      z-index: 1;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #2a2f38;
+      border-radius: 10px;
+      box-shadow: inset 0px 0px 0px white;
+      z-index: 1;
+    }
     .container {
       position: relative;
       .page-title {

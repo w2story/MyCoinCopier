@@ -22,6 +22,11 @@ export async function videoListSearch() {
     .then((Response) => {
       donListRow = Response.data;
       lastVideoDonKey.set(donListRow.videorow[0].video_don_key);
+      donListRow.videorow.forEach(item => {
+        if (item.don_print == 1) {
+          item.active = true;
+        }
+      });
     }).catch((Error) => {
       console.log(Error);
       donListRow.success = false;
@@ -36,6 +41,25 @@ export async function videoLastKeySearch(data) {
 
   await axios
     .post(url + "/donlist/video/search/", sendData, config)
+    .then((Response) => {
+      donListRow = Response.data;
+    }).catch((Error) => {
+      console.log(Error);
+      donListRow.success = false;
+    });
+  return donListRow.success;
+}
+
+export async function videoRePlay(data) {
+  let sendData = {
+    donKey: data,
+    ukey: userKey
+  };
+
+  let donListRow = {};
+
+  await axios
+    .post(url + "/donlist/video/replay/", sendData, config)
     .then((Response) => {
       donListRow = Response.data;
     }).catch((Error) => {

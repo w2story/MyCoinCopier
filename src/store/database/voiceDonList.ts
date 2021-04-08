@@ -22,6 +22,11 @@ export async function voiceListSearch() {
     .then((Response) => {
       donListRow = Response.data;
       lastVoiceDonKey.set(donListRow.voicerow[0].voice_don_key);
+      donListRow.voicerow.forEach(item => {
+        if (item.don_print == 1) {
+          item.active = true;
+        }
+      });
     }).catch((Error) => {
       console.log(Error);
       donListRow.success = false;
@@ -36,6 +41,24 @@ export async function voiceLastKeySearch(data) {
 
   await axios
     .post(url + "/donlist/voice/search/", sendData, config)
+    .then((Response) => {
+      donListRow = Response.data;
+    }).catch((Error) => {
+      console.log(Error);
+      donListRow.success = false;
+    });
+  return donListRow.success;
+}
+
+export async function voiceRePlay(data) {
+  let sendData = {
+    donKey: data,
+    ukey: userKey
+  };
+  let donListRow = {}
+
+  await axios
+    .post(url + "/donlist/voice/replay/", sendData, config)
     .then((Response) => {
       donListRow = Response.data;
     }).catch((Error) => {
